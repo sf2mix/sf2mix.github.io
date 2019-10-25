@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	 
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	    <title>Rocket Coming Soon Page, made by land-of-web.com</title>
+	    <link type="text/css" href="styles/reset.css" rel="stylesheet" media="all" />
+	    <link type="text/css" href="styles/text.css" rel="stylesheet" media="all" />
+	    <link type="text/css" href="styles/960.css" rel="stylesheet" media="all" />
+	    <link type="text/css" href="styles/style.css" rel="stylesheet" media="all" />
+		<link type="text/css" href="styles/jquery.countdown.css" rel="stylesheet" media="all" />
+		
+
+	</head>
+	 
+	<body>
+	<!--Header-->
+  <div style="width:640px;height:480px;max-width:100%">
+        <div id="game"></div>
+      </div>
+<script type="text/javascript">
+    
+	EJS_player = '#game';
+    EJS_gameUrl = 'https://files.retrogames.cc/rom/19/new/sf2yyc2.zip';
+    EJS_gameParentUrl = 'https://files.retrogames.cc/rom/19/new/sf2ce.zip';
+    EJS_gameID = 10042;
+    EJS_core = 'arcade';
+    EJS_biosUrl = '/bios/arcade.7z';
+        
+    EJS_onGameStart = function() {
+    console.log('start');
+    $.post('/ajax/start-game', {id:EJS_gameID, rid:0}, function(ret) {});
+    $('.reveal-overlay, .reveal.without-overlay').appendTo($('.ejs--7a5f920ceffb2913f6dbda780573cf'));
+    };
+	
+	
+</script>
+<script src="https://www.emulatorjs.com/loader.js"></script>
+  
+ 
+
+<!-- Scripts -->				  
+
+	</body>
+	</html>
