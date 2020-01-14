@@ -15,28 +15,35 @@
 	 
 	<body>
 	<!--Header-->
-  <div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    
-	EJS_player = '#game';
-    EJS_gameUrl = 'https://files.retrogames.cc/rom/19/new/sf2yyc2.zip';
-    EJS_gameParentUrl = 'https://files.retrogames.cc/rom/19/new/sf2ce.zip';
-    EJS_gameID = 10042;
-    EJS_core = 'arcade';
-    EJS_biosUrl = '/bios/arcade.7z';
-        
-    EJS_onGameStart = function() {
-    console.log('start');
-    $.post('/ajax/start-game', {id:EJS_gameID, rid:0}, function(ret) {});
-    $('.reveal-overlay, .reveal.without-overlay').appendTo($('.ejs--7a5f920ceffb2913f6dbda780573cf'));
-    };
-	
-	
+__________________________________Code example______________________________
+
+<code>
+
+<div id='emul'>
+</div>
+
+<script>
+
+
+var NepPlayer = "#emu";     // ID of html element where the emulator will be inserted
+ 
+var NepEmu = "cps1";         // Platform select
+ 
+var NepZoom = "enable";     // Add extra button on toolbar to scale up emulator. Disabled by default
+ 
+var NepMaxWidth = "1100px"; // Maximum width size of emulator. 870px by default
+ 
+var NepLang = "en";         // Interface language of the emulator. EN by default
+ 
+var gameUrl = "http://neptunjs.xyz/roms/cps/ffight.zip"; // Game Url
+ 
+var NjsScript=document.createElement( 'script' );
+
+NjsScript.src="//mem.neptunjs.com/njs/njsLoader.js";
+
+document.body.appendChild(NjsScript)
+
 </script>
-<script src="https://www.emulatorjs.com/loader.js"></script>
-  
  
 
 <!-- Scripts -->				  
