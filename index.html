@@ -54,26 +54,29 @@ td.header {
     font-size:24px;
     }
 
+
+td.header2 {
+    text-align:center;
+    padding:0px 25px;
+    vertical-align:center;
+    margin:0px;
+    
+    background-repeat:repeat-x;
+    background-position:center;
+    font-size:24px;
+    }
+
+
 </style>
 
-
-            <table style="border-collapse:collapse;"><tbody><tr><td style="padding:0px"><img id="masterHeader_rptHeader_imgHead" src="head11.png"></td>
+            <table style="border-collapse:collapse;"><tbody><tr><td><img id="masterHeader_rptHeader_imgHead" height="70" src="icon.png"></td>
         
-		    <td id="masterHeader_rptHeader_tdMid_0" class="header">Street Fighter 2 Mix</a></td>  
-			
-			<!--
-            <td id="masterHeader_rptHeader_tdMid_0" class="header"><a id="masterHeader_rptHeader_Hyperlink1_0" class="header" href="index.html">System</a></td>        
-            <td id="masterHeader_rptHeader_tdMid_1" class="header"><a id="masterHeader_rptHeader_Hyperlink1_1" class="header" href="index.html">Characters</a></td>
-		   -->	
-   
-        
-            <td style="padding:0px"><img id="masterHeader_rptHeader_imgFoot" src="foot11.png"></td></tr></tbody></table>
-        
-       
-
-                        
-
-     
+		    <td id="masterHeader_rptHeader_tdMid_0" class="header2"><a id="masterHeader_rptHeader_Hyperlink1_0" class="header" href="index.html">System</a></td>        
+           			
+            <td id="masterHeader_rptHeader_tdMid_0" class="header"><a id="masterHeader_rptHeader_Hyperlink1_0" class="header" href="select.html">Select Screen</a></td>        
+            <td id="masterHeader_rptHeader_tdMid_1" class="header"><a id="masterHeader_rptHeader_Hyperlink1_1" class="header" href="char.html">Characters</a></td>
+		             
+            <td style="padding:0px"><img id="masterHeader_rptHeader_imgFoot" src="boom.gif" height="70" ></td></tr></tbody></table>
 <style>
     .bodyHeading  
 {
@@ -113,13 +116,29 @@ color:#fdf7a8;
 
 .header { color:#06d7ed; }
 
+
+
 .header a:link {
 color:#06d7ed;
 text-shadow:4px 4px none;;
+text-decoration:none;
 }
 
 .header a:visited {
-color:#06d7ed;
+color:#16e7fd;
+text-decoration:none;
+}
+
+.header2 a:link {
+color:#e0e010;
+text-shadow:4px 4px none
+text-decoration:none;
+}
+
+.header2 a:visited {
+text-decoration:none;
+color:#ffff00;
+text-shadow:4px 4px none
 }
 
 .navHeading  
@@ -599,14 +618,18 @@ function imageResize(i,w,h) {
         <span id="content_ml_rptCommands_lblType_0" class="bodySection"></span><span id="content_ml_rptCommands_lblType_7" class="bodySection"></span><span id="content_ml_rptCommands_lblType_10" class="bodySection"></span><table style="width:700px">
             <tbody>
 			
+			<tr><td colspan="10" class="bodyTab">- Versus Mode (character can be changed in the challenge)</td></tr>
 			<tr><td colspan="10" class="bodyTab">- Random Backgrounds</td></tr>
-			<tr><td colspan="10" class="bodyTab">- No charge moves</td></tr>
+			<tr><td colspan="10" class="bodyTab">- Backgrounds with Fake 3d movement </td></tr>
+			<tr><td colspan="10" class="bodyTab">- Starting position before the fight with a chance to come different </td></tr>
+			<tr><td colspan="10" class="bodyTab">- No Charge Moves</td></tr>
 			<tr><td colspan="10" class="bodyTab">- Tap button moves easier</td></tr>
 			<tr><td colspan="10" class="bodyTab">- 3 punch or 3 kick moves using only 1</td></tr>
-			<tr><td colspan="10" class="bodyTab">- StunBar</td></tr>
-			<tr><td colspan="10" class="bodyTab">- Break Defence</td></tr>
-			<tr><td colspan="10" class="bodyTab">- Just defenced: defend at the last moment </td></tr>
+			<tr><td colspan="10" class="bodyTab">- VigorBar</td></tr>
+			<tr><td colspan="10" class="bodyTab">- Guard Break</td></tr>
+			<tr><td colspan="10" class="bodyTab">- Perfect Guard: defend at the last moment </td></tr>
 			<tr><td colspan="10" class="bodyTab">- Escape from grab: Up + any button (use 1/2 stunbar) </td></tr>
+			<tr><td colspan="10" class="bodyTab">- Long Jump (down - up)</td></tr>
 			
 			
         </tbody></table>
@@ -620,210 +643,6 @@ function imageResize(i,w,h) {
 
 			
 			
-<tr><br></tr>	
-<span id="content_mlSub_lblSubmit" class="bodyHeading"></span>
-    <div id="content_divML" class="themeDiv">
-    
-	
-
-  <td class="bodyData"><img src="ryu.png" height="64" width="64" title="Ryu" align="top"> <br>
-	   <a id="content_ml_lnkTitle" class="bodyNames">Ryu:</a>
-	  </td>
-	   <br>
-	  
-		
-	
-	
-        <span id="content_ml_rptCommands_lblType_0" class="bodySection"></span><span id="content_ml_rptCommands_lblType_7" class="bodySection"></span><span id="content_ml_rptCommands_lblType_10" class="bodySection"></span><table style="width:700px">
-            <tbody>
-			
-			<tr><td colspan="10" class="bodyTab">Throw Moves:</td></tr>
-            
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Seoi Nage</a></td>
-
-              <td style="max-width:45%" class="bodyData"><b>(close) </b><img src="moves/right.png" title="right" align="top"><b> / </b><img src="moves/left.png" title="left" align="top"><b> + </b><img src="moves/mpunch.png" title="punch" align="top"><b> / </b> <img src="moves/hpunch.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-        
-            
-            <tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Tomoe Nage</a></td>
-
-              <td style="max-width:45%" class="bodyData"><b>(close) </b><img src="moves/right.png" title="right" align="top"><b> / </b><img src="moves/left.png" title="left" align="top"><b> + </b><img src="moves/mkick.png" title="punch" align="top"><b> / </b> <img src="moves/hkick.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr><td colspan="10" class="bodyTab">Command Moves:</td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Hadouken</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/qcf.png" title="qcf" align="top"><b> + </b><img src="moves/punch.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Shoryuken</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/rory.png" title="shoryuken" align="top"><b> + </b><img src="moves/punch.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Tatsumaki Senpuukyaku</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/qcb.png" title="Tatsumaki" align="top"><b> + </b><img src="moves/kick.png" title="kick" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Kuchuu Tatsumaki Senpuukyaku</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/air.png" align="top"><b> </b> <img src="moves/qcb.png" title="Tatsumaki" align="top"><b> + </b><img src="moves/kick.png" title="kick" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr><td colspan="10" class="bodyTab">New Moves:</td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Fire Hadouken</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/qcf.png" title="qcf" align="top"><b> + </b><img src="moves/mpunch.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Tatsumaki Senpuukyaku</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/qcb.png" title="Tatsumaki" align="top"><b> + </b><img src="moves/lkick.png" title="kick" align="top"><b> (Extra Hit) </b></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>			
-			
-			
-        </tbody></table>    
-   
-     <br>
-       </div>
-                
-            </td></tr></tbody></table>
-   
-<tr><br></tr>	
-<span id="content_mlSub_lblSubmit" class="bodyHeading"></span>
-    <div id="content_divML" class="themeDiv">
-
-
-<td class="bodyData"><img src="honda.png" height="64" width="64" title="Honda" align="top"> <br>
-	   <a id="content_ml_lnkTitle" class="bodyNames">Honda:</a>
-	  </td>
-	   <br>
-	  
-	
-	
-	
-        <span id="content_ml_rptCommands_lblType_0" class="bodySection"></span><span id="content_ml_rptCommands_lblType_7" class="bodySection"></span><span id="content_ml_rptCommands_lblType_10" class="bodySection"></span><table style="width:700px">
-            <tbody>
-			
-			<tr><td colspan="10" class="bodyTab">Throw Moves:</td></tr>
-            
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Tawara Nage</a></td>
-
-              <td style="max-width:45%" class="bodyData"><b>(close) </b><img src="moves/right.png" title="right" align="top"><b> / </b><img src="moves/left.png" title="left" align="top"><b> + </b><img src="moves/mpunch.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-        
-		  <tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Saba Ori</a></td>
-
-              <td style="max-width:45%" class="bodyData"><b>(close) </b><img src="moves/right.png" title="right" align="top"><b> / </b><img src="moves/left.png" title="left" align="top"><b> + </b><img src="moves/hpunch.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-            
-            <tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Hiza Geri</a></td>
-
-              <td style="max-width:45%" class="bodyData"><b>(close) </b><img src="moves/right.png" title="right" align="top"><b> / </b><img src="moves/left.png" title="left" align="top"><b> + </b><img src="moves/mkick.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			 <tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Sekkan Kyaku</a></td>
-
-              <td style="max-width:45%" class="bodyData"><b>(close) </b><img src="moves/right.png" title="right" align="top"><b> / </b><img src="moves/left.png" title="left" align="top"><b> + </b><img src="moves/hkick.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			
-			<tr><td colspan="10" class="bodyTab">Command Moves:</td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Hyakuretsu Harite</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/tap.png" title="qcf" align="top"><b> + </b><img src="moves/punch.png" title="punch" align="top"><b> (</b>
-			  <img src="moves/right.png"> <b> / </b><img src="moves/left.png"> <b>)</b>
-			  </td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Super Zutsuki</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/left.png">&nbsp;&nbsp;<img src="moves/right.png"><b> + </b><img src="moves/punch.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			<tr style="vertical-align: top">
-              <td style="max-width:15%"></td>
-              <td id="content_ml_rptCommands_tdChain_0" style="max-width:35%"><a id="content_ml_rptCommands_lnkName_0" class="bodyMoves">Super Hyakkan Otoshi</a></td>
-
-              <td style="max-width:45%" class="bodyData"><img src="moves/down.png">&nbsp;&nbsp;<img src="moves/up.png"><b> + </b><img src="moves/kick.png" title="punch" align="top"></td>
-            <!--  <td style="max-width:5%"><a id="content_ml_rptCommands_lnkImage_0" class="bodyDetail" href="#pageTop" onclick="swapImage('content_imgPage','images/chars/move/3100.png');">[Preview]</a></td> -->
-            </tr>
-            <tr><td></td><td colspan="2"></td></tr>
-			
-			
-        </tbody></table>		
-		
-		
-		
-		 <!-- Summary -->
-    <br>
-       </div>
-                
-            </td></tr></tbody></table>
-	
-        
     
 
 <script type="text/javascript">
