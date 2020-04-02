@@ -19,9 +19,6 @@ div.cp
 <body id="bdyPage" class="fab bodyDetail" style="background:linear-gradient(#111111,#000000);background-color:#000000;background-repeat:no-repeat;">
     <a name="pageTop"></a>
     
-    <form method="post" action="./gameMove.aspx?id=59&amp;cId=4940" id="form1">
-
-
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-134118723-2"></script>
@@ -418,26 +415,20 @@ color:#fdf7a8;
 	color:#fdf7a8;
 }
 
-.themeDiv
+.themeDiv 
 {
 	background-color:#000000;
-	background:linear-gradient(#111111,#000000);
-background:-moz-linear-gradient(#111111,#000000);
-background:-o-linear-gradient(#111111,#000000);
-background:-webkit-linear-gradient(#111111,#000000);
-            
-	border:solid 3px #eef0fe;
+	background:linear-gradient(#222,#000000);
+    background:-moz-linear-gradient(#222,#000000);
+    background:-o-linear-gradient(#222,#000000);
+    background:-webkit-linear-gradient(#222,#000000);            
+	border:solid 3px #eef0fe; 
     border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
-    color:#eef0fe;
-    
-    
-    
-    background-image:url('images/theme/div11.png');
-    
-     
-     padding:5px;
-    
+    color:#eef0fe;  
+    padding:5px;    
 }
 
 
@@ -499,6 +490,7 @@ background:-webkit-linear-gradient(#111111,#000000);
 	border-radius:5px;
 	width:400px;
 }
+
 </style>
 
                       
@@ -521,77 +513,7 @@ background:-webkit-linear-gradient(#111111,#000000);
     
     
 
-
-
-    <script type="text/javascript">
-           function cookieGet(cId) {
-    var cStr = document.cookie;
-    var cStart = cStr.indexOf(cId + "=");
-    //var cEnd = 
-    if(cStart != -1) {
-        cStart += cId.length + 1;
-        
-        var cEnd = cStr.indexOf(";", cStart);
-        
-        if(cEnd == -1) cEnd = cStr.length;
-       
-        return cStr.substr(cStart,cEnd - cStart)
-    }
-    
-    return -1;
-   }
-   
-   function cookieSet(cookStr, cookVal) {
-   var d = new Date();
-    d.setDate(d.getDate()+365);
-
-    document.cookie = cookStr + "=" + cookVal + ";path=/;expires=" + d.getDate();
-    }
-
-
-function imageResize(i,w,h) {
-    var fullFlag = false;
-    var sizePcnt = 0.0;
-    var hPcnt,vPcnt;
-    
-    if(i) {
-        if(i.width > w) {
-            i.height = i.height * (w / i.width);
-            i.width = w;
-            fullFlag = true
-        }
-        if(i.height > h) {
-            i.width = i.width * (h / i.height);
-            i.height = h;
-            fullFlag = true
-        }
-        
-        if(i.width < w && i.height < h) {
-            hPcnt = (w - i.width) / i.width;
-            vPcnt = (h - i.height) / i.height;
-            
-            //alert(hPcnt + "," + vPcnt);
-            if(hPcnt < vPcnt){
-                sizePcnt = (w - i.width) / i.width;
-                i.height += i.height * sizePcnt;          
-                i.width = w;                
-            }
-            else {
-                sizePcnt = (h - i.height) / i.height;
-                i.width += i.width * sizePcnt;
-                i.height = h;
-                
-                //alert(sizePcnt);
-                //alert(i.width)
-                
-             }
-             
-        }
-        
-    }    
-}
-</script>
-
+ 
     	
 	  <td class="bodyData"><img src="select.png" height="64" width="64" title="system" align="top"> <br>
 	   <a id="content_ml_lnkTitle" class="bodyNames">Select Screen:</a>
@@ -601,14 +523,14 @@ function imageResize(i,w,h) {
 	
 	
 	
-        <span id="content_ml_rptCommands_lblType_0" class="bodySection"></span><span id="content_ml_rptCommands_lblType_7" class="bodySection"></span><span id="content_ml_rptCommands_lblType_10" class="bodySection"></span><table style="width:700px">
+        <span id="content_ml_rptCommands_lblType_0" class="bodySection"></span><span id="content_ml_rptCommands_lblType_7" class="bodySection"></span><span id="content_ml_rptCommands_lblType_10" class="bodySection"></span><table style="width:1000px">
             <tbody>
-			
+			<tr><td colspan="10" class="bodyTab">- Extra Color <font color="#ED0">(Medium Punch) </font></td></tr>
 			<tr><td colspan="10" class="bodyTab">- Random Mode - holding up random character with each fight</td></tr>
 			<tr><td colspan="10" class="bodyTab">- Random 1x - 3 punches</td></tr>
-			<tr><td colspan="10" class="bodyTab">- Exhibition Mode - 3 kicks (CPU x CPU) </td></tr>
-			<tr><td colspan="10" class="bodyTab">- Classic Mode - holding down (no random backgrounds)  </td></tr>
-			<tr><td colspan="10" class="bodyTab">- Original Mode - holding down + 3 kicks (no random backgrounds, no backgrounds changes)  </td></tr>
+			<tr><td colspan="10" class="bodyTab">- Exhibition Mode - 3 kicks <font color="#ED0">(CPU x CPU) </font> </td></tr>
+			<tr><td colspan="10" class="bodyTab">- Classic Mode - holding down <font color="#ED0">(no random backgrounds) </font> </td></tr>
+			<tr><td colspan="10" class="bodyTab">- Original Mode - holding down + 3 kicks <font color="#ED0"> (no random backgrounds, no backgrounds changes) </font> </td></tr>
 			
 			
         </tbody></table>
@@ -623,9 +545,7 @@ function imageResize(i,w,h) {
 			
 			
    
-
-</form>
-    
+   
 
 
 
