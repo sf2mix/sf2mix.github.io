@@ -1,5 +1,5 @@
 
-Ver 0.99b
+Ver 0.99c
 
 - All charging moves need a minimum charge.
 - If any player has Zanguief, a player facing each other will not start the match.
