@@ -1,4 +1,10 @@
 
+Ver 1.0
+
+- Revised Balrog command recognition.
+
+=================================================================================================
+
 Ver 0.99d
 
 - Guile new run animation.
@@ -17,6 +23,7 @@ Ver 0.99c
 
 =================================================================================================
 
+- Revisado reconhecimento dos comandos de Balrog
 - Guile nova animação de corrida.
 - Todos os movimentos de carga precisam de uma carga mínima exceto Chun Li (Spinning Bird Kick).
 - Se algum player tiver com Zanguief não começa a partida um player de frente para o outro.
