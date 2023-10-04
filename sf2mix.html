@@ -1,0 +1,110 @@
+<html>
+ <head>
+        <style>
+            body, html {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="width:640px;height:480px;max-width:100%">
+            <div id="game"></div>
+        </div>
+        <script>
+            EJS_player = "#game";
+            EJS_core = "arcade";
+            EJS_gameName = "sf2ce";
+            EJS_color = "#000000";
+            EJS_startOnLoaded = true;
+            EJS_pathtodata = "https://sf2mix.github.io/data/";
+            EJS_gameUrl = "https://sf2mix.github.io/downloads/sf2mix.zip";
+			EJS_defaultControls = {
+				0: {
+					0: {
+						'value': 's',
+						'value2': 'BUTTON_2'
+					},
+					1: {
+						'value': 'w',
+						'value2': 'BUTTON_4'
+					},
+					2: {
+						'value': '5',
+						'value2': 'SELECT'
+					},
+					3: {
+						'value': '1',
+						'value2': 'START'
+					},
+					4: {
+						'value': 'up arrow',
+						'value2': 'DPAD_UP'
+					},
+					5: {
+						'value': 'down arrow',
+						'value2': 'DPAD_DOWN'
+					},
+					6: {
+						'value': 'left arrow',
+						'value2': 'DPAD_LEFT'
+					},
+					7: {
+						'value': 'right arrow',
+						'value2': 'DPAD_RIGHT'
+					},
+					8: {
+						'value': 'a',
+						'value2': 'BUTTON_1'
+					},
+					9: {
+						'value': 'q',
+						'value2': 'BUTTON_3'
+					},
+					10: {
+						'value': 'e',
+						'value2': 'LEFT_TOP_SHOULDER'
+					},
+					11: {
+						'value': 'd',
+						'value2': 'RIGHT_TOP_SHOULDER'
+					},
+					24: {
+						'value': 'f5'
+					},
+					25: {
+						'value': 'f7'
+					},
+					26: {
+						'value': 'f6'
+					},
+					27: {
+						'value': 'add'
+					},
+					28: {
+						'value': 'space'
+					},
+					29: {
+						'value': 'subtract'
+					},
+				},
+				1: {},
+				2: {},
+				3: {}
+			}
+			EJS_VirtualGamepadSettings = [
+				{"type":"button","text":"4","id":"a","location":"right","right":145,"top":80,"bold":true,"input_value":0},
+                {"type":"button","text":"5","id":"b","location":"right","right":75,"top":80,"bold":true,"input_value":8},
+                {"type":"button","text":"6","id":"c","location":"right","right":5,"top":80,"bold":true,"input_value":11},
+                {"type":"button","text":"1","id":"x","location":"right","right":145,"top":10,"bold":true,"input_value":1},
+                {"type":"button","text":"2","id":"y","location":"right","right":75,"top":10,"bold":true,"input_value":9},
+                {"type":"button","text":"3","id":"z","location":"right","right":5,"top":10,"bold":true,"input_value":10},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Coin","id":"mode","location":"top","left":5,"top":-170,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"Start","id":"start","location":"top","left":70,"top":-170,"fontSize":15,"block":true,"input_value":3}
+		]
+
+        </script>
+        <script src="https://sf2mix.github.io/data/loader.js"></script>
+    </body>
+</html>
