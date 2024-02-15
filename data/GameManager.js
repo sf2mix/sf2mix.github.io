@@ -5,7 +5,6 @@ class EJS_GameManager {
         this.FS = this.Module.FS;
         this.functions = {
             restart: this.Module.cwrap('system_restart', '', []),
-            getStateInfo: this.Module.cwrap('get_state_info', 'string', []), //these names are dumb
             saveStateInfo: this.Module.cwrap('save_state_info', 'null', []),
             loadState: this.Module.cwrap('load_state', 'number', ['string', 'number']),
             screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
@@ -31,18 +30,13 @@ class EJS_GameManager {
             setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', [''])
         }
-        this.mkdir("/home");
-        this.mkdir("/home/web_user");
-        this.mkdir("/home/web_user/retroarch");
-        this.mkdir("/home/web_user/retroarch/userdata");
-        this.mkdir("/home/web_user/retroarch/userdata/config");
-        this.mkdir("/home/web_user/retroarch/userdata/config/Beetle PSX HW");
-        this.FS.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
+        this.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
+        this.writeFile("/home/web_user/retroarch/userdata/config/MAME 2003 (0.78)/MAME 2003 (0.78).opt", 'mame2003_skip_disclaimer = "enabled"\nmame2003_skip_warnings = "enabled"\n');
         
         this.mkdir("/data");
         this.mkdir("/data/saves");
         
-        this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+        this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
         
         this.FS.mount(IDBFS, {}, '/data/saves');
         this.FS.syncfs(true, () => {});
@@ -53,6 +47,54 @@ class EJS_GameManager {
             this.saveSaveFiles();
             this.FS.syncfs(() => {});
         })
+    }
+    loadExternalFiles() {
+        return new Promise(async (resolve, reject) => {
+            if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === 'Object') {
+                for (const key in this.EJS.config.externalFiles) {
+                    await new Promise(done => {
+                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], async (res) => {
+                            if (res === -1) {
+                                if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
+                                return done();
+                            }
+                            let path = key;
+                            if (key.trim().endsWith("/")) {
+                                const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
+                                let name = this.EJS.config.externalFiles[key].split("/").pop().split("#")[0].split("?")[0].replace(invalidCharacters, "").trim();
+                                if (!name) return done();
+                                const files = await this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Assets"));
+                                if (files["!!notCompressedData"]) {
+                                    path += name;
+                                } else {
+                                    for (const k in files) {
+                                        this.writeFile(path+k, files[k]);
+                                    }
+                                    return done();
+                                }
+                            }
+                            try {
+                                this.writeFile(path, res.data);
+                            } catch(e) {
+                                if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
+                            }
+                            done();
+                        }, null, true, {responseType: "arraybuffer", method: "GET"});
+                    })
+                }
+            }
+            resolve();
+        });
+    }
+    writeFile(path, data) {
+        const parts = path.split("/");
+        let current = "/";
+        for (let i=0; i<parts.length-1; i++) {
+            if (!parts[i].trim()) continue;
+            current += parts[i] + "/";
+            this.mkdir(current);
+        }
+        this.FS.writeFile(path, data);
     }
     mkdir(path) {
         try {
@@ -92,30 +134,8 @@ class EJS_GameManager {
         this.functions.restart();
     }
     getState() {
-        return new Promise(async (resolve, reject) => {
-            const stateInfo = (await this.getStateInfo()).split('|')
-            let state;
-            let size = stateInfo[0] >> 0;
-            if (size > 0) {
-                state = new Uint8Array(size);
-                let start = stateInfo[1] >> 0;
-                for (let i=0; i<size; i++) state[i] = this.Module.getValue(start + i);
-            }
-            resolve(state);
-        })
-    }
-    getStateInfo() {
         this.functions.saveStateInfo();
-        return new Promise((resolve, reject) => {
-            let a;
-            let b = setInterval(() => {
-                a = this.functions.getStateInfo();
-                if (a) {
-                    clearInterval(b);
-                    resolve(a);
-                }
-            }, 50)
-        });
+        return this.FS.readFile("/current.state");
     }
     loadState(state) {
         try {
@@ -132,7 +152,16 @@ class EJS_GameManager {
     }
     screenshot() {
         this.functions.screenshot();
-        return this.FS.readFile('screenshot.png');
+        return new Promise(async resolve => {
+            while (1) {
+                try {
+                    FS.stat("/screenshot.png");
+                    return resolve(this.FS.readFile("/screenshot.png"));
+                } catch(e) {}
+                
+                await new Promise(res => setTimeout(res, 50));
+            }
+        })
     }
     quickSave(slot) {
         if (!slot) slot = 1;

@@ -14,6 +14,9 @@
                 }
             }();
             script.onload = resolve;
+            script.onerror = () => {
+                filesmissing(file).then(e => resolve());
+            }
             document.head.appendChild(script);
         })
     }
@@ -29,8 +32,31 @@
                 }
             }();
             css.onload = resolve;
+            css.onerror = () => {
+                filesmissing(file).then(e => resolve());
+            }
             document.head.appendChild(css);
         })
+    }
+
+    async function filesmissing(file) {
+        console.error("Failed to load " + file);
+        let minifiedFailed = file.includes(".min.") && !file.includes("socket");
+        console[minifiedFailed?"warn":"error"]("Failed to load " + file + " beacuse it's likly that the minified files are missing.\nTo fix this you have 3 options:\n1. You can download the zip from the latest release here: https://github.com/EmulatorJS/EmulatorJS/releases/latest - Stable\n2. You can download the zip from here: https://cdn.emulatorjs.org/latest/data/emulator.min.zip and extract it to the data/ folder. (easiest option) - Beta\n3. You can build the files by running `npm i && npm run build` in the data/minify folder. (hardest option) - Beta\nNote: you will probably need to do the same for the cores, extract them to the data/cores/ folder.");
+        if (minifiedFailed) {
+            console.log("Attempting to load non-minified files");
+            if (file === "emulator.min.js") {
+                await loadScript('emulator.js');
+                await loadScript('nipplejs.js');
+                await loadScript('shaders.js');
+                await loadScript('storage.js');
+                await loadScript('gamepad.js');
+                await loadScript('GameManager.js');
+                await loadScript('socket.io.min.js');
+            } else {
+                await loadStyle('emulator.css');
+            }
+        }
     }
     
     if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
@@ -45,7 +71,6 @@
     } else {
         await loadScript('emulator.min.js');
         await loadStyle('emulator.min.css');
-        
     }
     const config = {};
     config.gameUrl = window.EJS_gameUrl;
@@ -82,6 +107,10 @@
     config.disableCue = window.EJS_disableCue;
     config.startBtnName = window.EJS_startButtonName;
     config.softLoad = window.EJS_softLoad;
+    config.screenRecording = window.EJS_screenRecording;
+    config.externalFiles = window.EJS_externalFiles;
+    config.disableDatabases = window.EJS_disableDatabases;
+    config.disableLocalStorage = window.EJS_disableLocalStorage;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
@@ -107,9 +136,15 @@
         window.EJS_emulator.on("start", window.EJS_onGameStart);
     }
     if (typeof window.EJS_onLoadState === "function") {
-        window.EJS_emulator.on("load", window.EJS_onLoadState);
+        window.EJS_emulator.on("loadState", window.EJS_onLoadState);
     }
     if (typeof window.EJS_onSaveState === "function") {
-        window.EJS_emulator.on("save", window.EJS_onSaveState);
+        window.EJS_emulator.on("saveState", window.EJS_onSaveState);
+    }
+    if (typeof window.EJS_onLoadSave === "function") {
+        window.EJS_emulator.on("loadSave", window.EJS_onLoadSave);
+    }
+    if (typeof window.EJS_onSaveSave === "function") {
+        window.EJS_emulator.on("saveSave", window.EJS_onSaveSave);
     }
 })();
