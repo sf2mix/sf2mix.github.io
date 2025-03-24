@@ -1,0 +1,44 @@
+<html>
+ <head>
+        <style>
+            background-color: rgb(0,0,0);
+			body, html {
+                margin: 0;
+                padding: 0;
+            }
+			body {background-color: rgb(10,10,10);}
+        </style>
+    </head>
+    <body>
+        <div style="width:640px;height:480px;max-width:100%">
+            <div id="game"></div>
+        </div>
+        <script>
+            EJS_player = "#game";
+            EJS_core = "arcade";
+            EJS_gameName = "sf2ce";
+            EJS_color = "#000000";
+            EJS_startOnLoaded = true;
+			EJS_fullscreenOnLoad = true;
+           <!-- EJS_pathtodata = "https://sf2mix.github.io/data/"; -->
+            EJS_gameUrl = "https://sf2mix.github.io/data/sf2ce.zip";
+			EJS_gameID = 996;
+			EJS_oldCores = true;
+			<!-- EJS_netplayUrl = "https://www.retrogames.cc/"; -->
+			EJS_VirtualGamepadSettings = [
+				{"type":"button","text":"4","id":"a","location":"right","right":145,"top":80,"bold":true,"input_value":0},
+                {"type":"button","text":"5","id":"b","location":"right","right":75,"top":80,"bold":true,"input_value":8},
+                {"type":"button","text":"6","id":"c","location":"right","right":5,"top":80,"bold":true,"input_value":11},
+                {"type":"button","text":"1","id":"x","location":"right","right":145,"top":10,"bold":true,"input_value":1},
+                {"type":"button","text":"2","id":"y","location":"right","right":75,"top":10,"bold":true,"input_value":9},
+                {"type":"button","text":"3","id":"z","location":"right","right":5,"top":10,"bold":true,"input_value":10},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Coin","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
+		]
+
+        </script>
+          <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+		<!-- <script src="https://sf2mix.github.io/data/loader.js"></script> -->
+    </body>
+</html>
