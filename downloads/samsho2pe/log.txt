@@ -1,0 +1,52 @@
+Samurai Shodown 2 Perfect V.2.6 BETA FINAL
+
+essential program ROM 063-p1pe.p1 has a  CRC of F828C04C 
+essential program ROM 063-p2pe.sp2 has a CRC of 7594E942
+essential program ROM 063-p3pe.p3 has a  CRC of 7DD8BADA
+
+Update patch notes
+
+[Nerf]  Shikihadori has been removed from the following characters:
+Galford, Hanzo, Nakoruru,Genan,Nicotine, Cham Cham, Earthquake
+Reason:
+Characters with many special moves while unarmed have lost access to Shikihadori.
+The move is now intended to be more exclusive to characters with fewer unarmed special options, improving combat balance and character identity.
+
+[System Update] Weapon Timer Saved Between Rounds
+New weapon break system update implemented.
+Before:
+When a weapon was broken, an internal timer controlled when the weapon would return to the player. If the round ended before the timer reached zero, the system would reset normally in the next round.
+Now:
+The weapon recovery timer is saved between rounds.
+Example:
+If a player still has remaining recovery time when the round ends, the next round will start with that player still disarmed until the timer finishes. The timer continues exactly where it stopped in the previous round.
+Purpose:
+To make weapon breaking more meaningful and preserve the advantage earned by the opponent during combat.
+
+[Versus Mode Update] Stage System Changes
+The automatic random stage system in VS mode has been removed.
+To restore character identity and allow players to fight on their own stages with their own music themes.
+
+[New Feature] Optional Stage Randomizer
+Players with WIN status can now manually randomize stages.
+
+How it works:
+After selecting your character, keep holding any input button:
+A / B / C / D or any button combination.
+Do not release the button after character selection.
+Continue holding the input until the VS presentation screen appears, where the announcer introduces both fighters.
+The input must remain held continuously for exactly 5 seconds during the transition and VS presentation screen.
+If successful, the stage will randomize automatically before the fight begins.
+This method prevents timing issues caused by the opponent selecting their character too quickly or too slowly.
+This system allows players to choose between:
+classic stage rotation or optional random stages.
+
+[Buffs]
+
+Wanfu - Create New Move for "Armed Version" -  Pillar Front Lock (Block Sword) 
+Wanfu - Create New Move for "Unnarmed Version" - Spirit Whirlwind Wham Fist
+Ukyo  - Create New Move for "Unnarmed Version" - Ghostly Dashing Punch
+Ukyo  - Create New Move for "Unnarmed Version" - Ghostly Dashing Kick
+Genjuro - Create New Move for "Unnarmed Version" - Lightning Fist
+Jubei - Create New Move for "Unnarmed Version" - Tsunami Punch
+
