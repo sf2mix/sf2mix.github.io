@@ -1,3 +1,23 @@
+
+---------------------------------------------------------------------------------------
+
+Samurai Shodown 2 Perfect V.2.7 BETA FINAL
+
+essential program ROM 063-p1pe.p1 has a  CRC of 141BC590
+essential program ROM 063-p2pe.sp2 has a CRC of 8A0163D7
+essential program ROM 063-p3pe.p3 has a  CRC of D3BB6B43 
+
+Update patch notes
+
+Correct collors in stages
+
+[Buffs]
+
+Earthquake - Create New Move Command Grab - Deadly Skunk Burts
+
+---------------------------------------------------------------------------------------
+
+
 Samurai Shodown 2 Perfect V.2.6 BETA FINAL
 
 essential program ROM 063-p1pe.p1 has a  CRC of F828C04C 
@@ -10,16 +30,23 @@ Update patch notes
 Galford, Hanzo, Nakoruru,Genan,Nicotine, Cham Cham, Earthquake
 Reason:
 Characters with many special moves while unarmed have lost access to Shikihadori.
-The move is now intended to be more exclusive to characters with fewer unarmed special options, improving combat balance and character identity.
+The move is now intended to be more exclusive to characters with fewer unarmed special options, 
+improving combat balance and character identity.
 
 [System Update] Weapon Timer Saved Between Rounds
 New weapon break system update implemented.
+
 Before:
-When a weapon was broken, an internal timer controlled when the weapon would return to the player. If the round ended before the timer reached zero, the system would reset normally in the next round.
+When a weapon was broken, an internal timer controlled when the weapon would return to the player. If the 
+round ended before the timer reached zero, the system would reset normally in the next round.
+
 Now:
 The weapon recovery timer is saved between rounds.
+
 Example:
-If a player still has remaining recovery time when the round ends, the next round will start with that player still disarmed until the timer finishes. The timer continues exactly where it stopped in the previous round.
+If a player still has remaining recovery time when the round ends, the next round will start with that player 
+still disarmed until the timer finishes. The timer continues exactly where it stopped in the previous round.
+
 Purpose:
 To make weapon breaking more meaningful and preserve the advantage earned by the opponent during combat.
 
@@ -50,3 +77,5 @@ Ukyo  - Create New Move for "Unnarmed Version" - Ghostly Dashing Kick
 Genjuro - Create New Move for "Unnarmed Version" - Lightning Fist
 Jubei - Create New Move for "Unnarmed Version" - Tsunami Punch
 
+
+---------------------------------------------------------------------------------------
