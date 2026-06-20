@@ -1,6 +1,45 @@
 
 ---------------------------------------------------------------------------------------
 
+Samurai Shodown 2 Perfect V.2.8 BETA FINAL
+
+essential program ROM 063-p1pe.p1 has a  CRC of C578DCB1 
+essential program ROM 063-p2pe.sp2 has a CRC of 01CDED84 
+essential program ROM 063-p3pe.p3 has a  CRC of 9F2E0244 
+Update patch notes
+
+Modief collors 4 rounds for Ukyo and Haohmaru stage
+
+[Bug]
+
+Correct bug new move for Wanfu "Pillar Front Lock"
+
+
+Stage Selection Update
+
+The stage selection system has been reverted to its original behavior.
+The game will once again use the original stage rotation logic, automatically selecting either Player 1's stage or Player 2's stage, just as in the arcade version. The internal system also prevents the same stage from being played excessively, although it is still possible to play up to two consecutive matches on the same stage before another one is selected.
+The previous modification that forced stage randomization every match has been removed. This change restores the ability to play on each character's own stage with its original music.
+A new optional stage randomizer has been added. The winning player is the only one who can activate it by holding Input D during the character introduction screen.
+
+Important rules:
+
+The losing player cannot activate or change stage randomization.
+A challenger joining the game by inserting a coin and pressing Start cannot randomize the stage.
+At the beginning of a new session, when neither player has any wins, Player 1 has priority and may activate stage randomization.
+This rule exists because Samurai Shodown does not allow a player to start directly on the Player 2 side. The first player must always begin as Player 1, while Player 2 can only join as a challenger.
+This preserves the original arcade stage selection system while giving the current winner the option to choose a random stage when desired
+
+Character Selection Update
+
+Character selection has also been reverted to its original arcade behavior.
+Now, once a character is selected, the winning player remains locked to that character, just as in the original game. The only exception involves the Random Character option.
+If a player selects a character using Random Select and wins the match, then when a challenger joins, the winning player will be allowed to choose a new character freely. They may select any character manually or use Random Select again.
+However, if the player chooses a character manually after that, the original rule applies again: they become locked to that character and cannot switch unless they once again enter the match through Random Select and win.
+This change preserves the original arcade experience while providing additional flexibility for players who choose to use Random Select.
+
+---------------------------------------------------------------------------------------
+
 Samurai Shodown 2 Perfect V.2.7 BETA FINAL
 
 essential program ROM 063-p1pe.p1 has a  CRC of 141BC590
