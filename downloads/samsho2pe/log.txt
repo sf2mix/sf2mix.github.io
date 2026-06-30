@@ -3,9 +3,10 @@
 
 Samurai Shodown 2 Perfect V.2.9 BETA FINAL
 
-essential program ROM 063-p1pe.p1 has a  CRC of A8C26FB8 
-essential program ROM 063-p2pe.sp2 has a CRC of 9BE85A33
-essential program ROM 063-p3pe.p3 has a  CRC of 9F2E0244 
+essential program ROM 063-p1pe.p1 has a  CRC of C47446F7
+essential program ROM 063-p2pe.sp2 has a CRC of 269E9BE3
+essential program ROM 063-p3pe.p3 has a  CRC of 7E9083E9
+
 
 
 
