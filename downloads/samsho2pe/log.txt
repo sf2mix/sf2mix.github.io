@@ -1,7 +1,36 @@
 
 ---------------------------------------------------------------------------------------
 
-Samurai Shodown 2 Perfect V.2.9 BETA FINAL
+Samurai Shodown 2 Perfect V.3.0 BETA FINAL
+
+essential program ROM 063-p1pe.p1 has a  CRC of B3B0C7DF
+essential program ROM 063-p2pe.sp2 has a CRC of 0EFB4875
+essential program ROM 063-p3pe.p3 has a  CRC of 5E912569
+
+
+
+Update patch notes
+
+[New Cancel]
+
+Low-hitting weak kick—now cancelable into other normal moves—improving combo linking.
+
+[Buff]
+
+Kuroko Returning Special Move "Super Satanic Saturnalia"
+
+[Adjustment]
+
+Desperation Power Timer Fix
+
+A balance adjustment was made to the duration of "Desperation Power". 
+Some characters had a duration of 22 seconds, such as Galford and Kyoshiro, while others had a shorter duration of only 12 seconds. 
+A fair balance was necessary to ensure equal treatment for all characters.
+
+
+---------------------------------------------------------------------------------------
+
+Samurai Shodown 2 Perfect V.2.9 
 
 essential program ROM 063-p1pe.p1 has a  CRC of C47446F7
 essential program ROM 063-p2pe.sp2 has a CRC of 269E9BE3
@@ -40,7 +69,7 @@ Now the bomb is properly recognized as an external projectile that does not belo
 
 ---------------------------------------------------------------------------------------
 
-Samurai Shodown 2 Perfect V.2.8 BETA FINAL
+Samurai Shodown 2 Perfect V.2.8 
 
 essential program ROM 063-p1pe.p1 has a  CRC of C578DCB1 
 essential program ROM 063-p2pe.sp2 has a CRC of 01CDED84 
@@ -79,7 +108,7 @@ This change preserves the original arcade experience while providing additional 
 
 ---------------------------------------------------------------------------------------
 
-Samurai Shodown 2 Perfect V.2.7 BETA FINAL
+Samurai Shodown 2 Perfect V.2.7 
 
 essential program ROM 063-p1pe.p1 has a  CRC of 141BC590
 essential program ROM 063-p2pe.sp2 has a CRC of 8A0163D7
@@ -96,7 +125,7 @@ Earthquake - Create New Move Command Grab - Deadly Skunk Burts
 ---------------------------------------------------------------------------------------
 
 
-Samurai Shodown 2 Perfect V.2.6 BETA FINAL
+Samurai Shodown 2 Perfect V.2.6 
 
 essential program ROM 063-p1pe.p1 has a  CRC of F828C04C 
 essential program ROM 063-p2pe.sp2 has a CRC of 7594E942
