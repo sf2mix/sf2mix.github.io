@@ -8,7 +8,6 @@ essential program ROM 063-p2pe.sp2 has a CRC of 0EFB4875
 essential program ROM 063-p3pe.p3 has a  CRC of 5E912569
 
 
-
 Update patch notes
 
 [New Cancel]
@@ -27,16 +26,9 @@ A balance adjustment was made to the duration of "Desperation Power".
 Some characters had a duration of 22 seconds, such as Galford and Kyoshiro, while others had a shorter duration of only 12 seconds. 
 A fair balance was necessary to ensure equal treatment for all characters.
 
-
 ---------------------------------------------------------------------------------------
 
-Samurai Shodown 2 Perfect V.2.9 
-
-essential program ROM 063-p1pe.p1 has a  CRC of C47446F7
-essential program ROM 063-p2pe.sp2 has a CRC of 269E9BE3
-essential program ROM 063-p3pe.p3 has a  CRC of 7E9083E9
-
-
+Samurai Shodown 2 Perfect V.2.9
 
 
 Update patch notes
@@ -69,11 +61,9 @@ Now the bomb is properly recognized as an external projectile that does not belo
 
 ---------------------------------------------------------------------------------------
 
-Samurai Shodown 2 Perfect V.2.8 
+Samurai Shodown 2 Perfect V.2.8
 
-essential program ROM 063-p1pe.p1 has a  CRC of C578DCB1 
-essential program ROM 063-p2pe.sp2 has a CRC of 01CDED84 
-essential program ROM 063-p3pe.p3 has a  CRC of 9F2E0244 
+
 Update patch notes
 
 Modief collors 4 rounds for Ukyo and Haohmaru stage
@@ -110,10 +100,6 @@ This change preserves the original arcade experience while providing additional 
 
 Samurai Shodown 2 Perfect V.2.7 
 
-essential program ROM 063-p1pe.p1 has a  CRC of 141BC590
-essential program ROM 063-p2pe.sp2 has a CRC of 8A0163D7
-essential program ROM 063-p3pe.p3 has a  CRC of D3BB6B43 
-
 Update patch notes
 
 Correct collors in stages
@@ -125,11 +111,8 @@ Earthquake - Create New Move Command Grab - Deadly Skunk Burts
 ---------------------------------------------------------------------------------------
 
 
-Samurai Shodown 2 Perfect V.2.6 
+Samurai Shodown 2 Perfect V.2.6
 
-essential program ROM 063-p1pe.p1 has a  CRC of F828C04C 
-essential program ROM 063-p2pe.sp2 has a CRC of 7594E942
-essential program ROM 063-p3pe.p3 has a  CRC of 7DD8BADA
 
 Update patch notes
 
@@ -184,5 +167,147 @@ Ukyo  - Create New Move for "Unnarmed Version" - Ghostly Dashing Kick
 Genjuro - Create New Move for "Unnarmed Version" - Lightning Fist
 Jubei - Create New Move for "Unnarmed Version" - Tsunami Punch
 
+
+---------------------------------------------------------------------------------------
+
+
+Samurai Shodown 2 Perfect V.2.2 BETA FINAL
+
+Ukyo Readjusted Tsubame Gaeshi Range Slash, Nerf
+Cham Cham Readjusted Boomerang Range For Zoom 3.5, Nerf
+Readjusted Range For All Chars, Simple Attacks, A,B,AB,C,D,CD, Nerf
+Readjusted Range For All Chars Unnarmed, Simple Attacks, A,B,AB,C,D,CD, Nerf
+Reduced Velocity All Chars For Zoom 3.5, Nerf
+Genan Unnarmed Jump+cd Crash Reset Game, Bug Fix
+Nakoruru Unnarmed Jump+A Crash Reset Game, Bug Fix
+
+
+---------------------------------------------------------------------------------------
+
+
+Samurai Shodown 2 Perfect V.2.1
+
+Was changed due to a bug in the move list!
+Readjusted The Distance Of All Jumps Forward And Backward For Zoom 3.5 (Terrible Mechanics, Existed 2 Jumps, Near And Far, Inconsistent distances)
+Cham Cham Readjusted Sprites Getting-up
+Earthquake Readjusted Jump+b, Reduced Range, Nerf
+Mizuki Adjusted Jump+ab Range, Reduce Range, Nerf
+Ukyo Readjusted Move "Ghostly Dashing Slice", Reduced Range For Zoom 3.5, Nerf
+Genjuro Readjusted Move "Triple Death Hack" (rekka 1, Button b And Ab), Reduced Range For Zoom 3.5, Nerf
+Genjuro Readjusted Move "Cherry Blossom Slice", Reduced Range For Zoom 3.5, Nerf
+Hanzo Readjusted Special Move "Ninja Windsplitter" Buff Velocity For Button Ab, Buff
+Hanzo New Combo 3 Hits, Down+c,up+forward+cd, Cancel Move "Ninja Windsplitter" Use Button Ab
+Nakoruru Readjusted Annu Mutsube, Reduced Range For Zoom 3.5, Nerf
+Shirahadori Shinken fixed the crash of the command not working, bug fix!
+
+---------------------------------------------------------------------------------------
+
+Samurai Shodown 2 Perfect V.2.0
+
+12 Collors All Chars
+New Overhead Stand All Chars
+New Move List Check Inputs, Introduce Dodge Forward, Dodge Backward, Lower Evade, Lay Down
+Race Can Now Be Cabcelled With Move "Bc" all chars
+Nicotine Create Unamerd Movement "Underworld Pummeler" Power Rage!
+Mizuki Readjusted Move "Hell Circle" Buff 2 Frames
+Mizuki Create Running Attack 3 Punchs And 3 Kicks
+Mizuki Readjusted Hitbox Jump+ab
+Mizuki Readjusted Hitbox Jump+b
+Nakoruru Readjusted "Apehuchi Kamui Risse", Hitstun Conect All Hits
+Haohmaru Readjusted Move "Tenhafujinzan", Hitstun Connect All Hits
+Galford Insert Physical Box In Jutsu Drop To The Ground
+Hanzo Insert Physical Box In Jutsu Drop To The Ground
+Earthquake Reduce Damage Move "Bounding Fat"
+Kyoshiro Reduce Damage Move "Dance Of Fire"
+Cham Cham Buff In Velocity Project, Move "Paku Paku-dios"
+Cham Cham Reduce Damage Move "Paku Paku-dios"
+Haohmaru Reduce Damage Move "Tenhafujinzan"
+Nakoruru Reduce Damage Move "Apehuchi Kamui Risse"
+Mizuki Reduce Damage Move "Hell Circle"
+Sieger Reduce Damage Move "Elefantglied"
+Cham Cham Reduce Damage Move "Flying Scratcher"
+Galford Reduced Timer Invisible Move "Back Stab"
+Hanzo Reduced Timer Invisible Move "Ninja Shadow Dance"
+Mizuki Reduced Timer Move "Curse Of Reverse" Reversed Defense
+Nicotine Reduced Timer Move "Wildheart Whammy" Reversed Defense
+Kyoshiro Attacks In Air, Jump+d Cancel With Move "Smoldering Blood Pounce"
+Nicotine Attacks In Air, Jump+b,or Jump+ab,or Jump+d,or Jump+cd With Move "Cane Swirl Cutter"
+Hanzo Cancel Attacks In Air, Jump+a,jump+ab,jump Right or Left+cd With Move "Ninja Windsplitter"
+Sieger Move "Vulcan Weinen Trukken" no Longer Generates Dizzy When Striking Opponent By Lifting, Bug Fix.
+Hanzo and Galford special grabs range were increased significantly
+Readjusted Jump A,B,AB,C,D,CD For All Chars, Nerf In Jump Infinity Hitboxes
+Jump Attacks Of Many Characters Were Rebalanced, Changed The Amount Of Active Frames.
+Hitdef Readjusted Sliding, Light Defense 11 Frames, Medium 17 Frames, Strong 17 Frames.
+Fixed a Bug Where Corner Block Had no Proper Blockstun, The game didn't execute the slide counter in the corner of the screen, It Now Works The Same Way as In The Middle Of The Screen, Counter Is Inserted Into The player's Memory!
+Changed The Dodge Mechanic, It Now Works Similar To The Kof Dodge.
+Open Map Zoom Reduced From 5.0x To 3.5x.
+
+---------------------------------------------------------------------------------------
+
+Samurai Shodown 2 Perfect V.1.9 
+
+Removed bcd scaped command from, hanzo, kuroko and genan, moves scape from hanzo and kuroko It is now possible to use them in the middle of the game, new command in move list,  check!   
+Fixed Kuroko talk before challenging to fight, bug fix!
+Standardized Stun for attacks from above (jumping attack), stun medium for all chars!
+Galford and Hanzo reversed the stun of attack AB low, now adversary is knocked down!
+Create new frame the char pick ups impulse before jumping, 2 frames for starting jump for all chars!
+Readjusted 1 frame buff in jump for Ukyo, Genan, Cham Cham, Nakoruru, check list frames
+New config jumping for all chars
+
+---------------------------------------------------------------------------------------
+
+Samurai Shodown 2 Perfect V.1.8
+
+Hurtbox all chars rebalanced in the air for so that when they collide someone gets hit
+Jumps with punch weak attacks from Sieger, Nicotine, Cham Cham are now blocked by jubei in special move "Shingatou blocked counter",buff!
+Medium punch attack short now blocked by jubei in special move "Shingatou blocked counter", buff!
+Hanzo infinite combo removed, jump right + CD attack cancels on ovehead, AB front cancel in mozuto, restarts the same loop, it worked in Earthquake, Sieger, Wanfu, Nerf!
+Special move Tsubame Rokuren consumes damage on defense in new version, buff!
+All chars execute command basic Race(Run), in original to cancel and attack in average of 12 or 7 frames, now cancel in 3 frames, buff!
+Hit counter now predicts the char in a "Aerial Stun" and clear "hit counter" on the screen!
+Genjuro Remove Combo Jump Attack, Down+AB, Ouzakan, 3 rekka, big damage now the combo no longer exists, nerf!
+Genjuro Remove Combo Jump Attack, Down+AB, Ouzakan, "Five Flash Rip" in corner, big damage 80%, nerf!
+Wanfu readjusted damage project special move "Thunder Bomb", Explosion Steam Smoke in counter big damage 70% in original samsho2, rebalanced for 30% damage, nerf!
+Ukyo Tachibana modified special move "Tsubame Rokuren" to FHCF+AB
+Genjuro cancel AB stand or down with special moves in stun or block, first frames, buff!  
+Fixed a bug where Nakoruru had problems to hang on her "Eagle" if it was too far away allowing her to do empty cancels, This bug already exists in the original Samsho2, it made it possible to execute infinite combos, now the eagle runs at high speed along with Nakoruru so it can be used, if it retreats on the backdash the eagle also goes at high speed, only when nakoruru 2x Forward, or 2x Backward
+
+---------------------------------------------------------------------------------------
+
+New Update Version 1.7
+
+Several hitboxes ID changed to ensure the opponent will have the correct stun when they take a hit when they are crouched, fix needed so that version 1.6 update to work properly!
+Ukyo Tachibana modified special move "Tsubame Rokuren" to QCBF+AB
+
+---------------------------------------------------------------------------------------
+
+New Update Version 1.6
+
+Fixed the way stun was handled by the game, previously, the game was handling Standing and Crouched combos differently, now both Standing and Crouched stun are behaving the same way it behaves when the character is Standing.
+
+---------------------------------------------------------------------------------------
+
+New Update Version 1.5
+
+Attack damage has been reduced in general for everyone, characters last longer in battle by enduring combos, dizzy harder to achieve, requiring a lot of hits in a row.
+Hit counter now predicts the character in a falling state and clear "hit counter" on the screen!
+
+---------------------------------------------------------------------------------------
+
+New Update Version 1.4
+
+Concerted "hit counter code", Its ok!
+Kuroko's lines as a judge have been adjusted, the lyrics no longer disappear
+Create story mode for Mizuki and Kuroko!
+Mizuki and Kuroko now has an ending when completing the game!
+Create the 3 cutting scenes were introduced kuroko and Mizuki conversation, Scene 1 talking to Mizuki in the middle of the rocks, scene 2 talking to kuroko, scene 3 in the middle of the rocks for battle against Mizuki!
+Ukyo Update collor 8, palette similar to samsho3
+Charlotte Update collor 6, darkened armor and hair
+Nicotine update collor 6, Lilac Hat!
+Kuroko update collor 2,3,4,5,6,7,8, darkened clothes
+Genan update collor 6, new collor!
+Kuroko light punch down adjusted image, increased range hitbox attack
+Random stage in versus mode, not random stage vs cpu
+Random collors all chars in roulette , press "start button" in select screen.
 
 ---------------------------------------------------------------------------------------
