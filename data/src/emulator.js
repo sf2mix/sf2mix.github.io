@@ -956,6 +956,12 @@ class EmulatorJS {
                 }
             },
             totalDependencies: 0,
+            postMainLoop: () => {
+                // Emscripten lê Module["postMainLoop"] uma única vez, dentro de MainLoop.init(),
+                // que roda antes de this.Module existir. Esta ponte repassa para o handler
+                // instalado posteriormente pelo menu de netplay.
+                if (this.netplayPostMainLoop) this.netplayPostMainLoop();
+            },
             locateFile: function (fileName) {
                 if (this.debug) console.log(fileName);
                 if (fileName.endsWith(".wasm")) {
@@ -5574,7 +5580,7 @@ class EmulatorJS {
             this.pause(true);
             this.netplay.ready++;
             this.netplay.current_frame = 0;
-            if (this.netplay.ready === this.netplay.getUserCount()) {
+            if (this.netplay.ready >= this.netplay.getUserCount()) {
                 this.play(true);
             }
             syncing = false;
@@ -5613,7 +5619,7 @@ class EmulatorJS {
             }
             if (data.ready && this.netplay.owner) {
                 this.netplay.ready++;
-                if (this.netplay.ready === this.netplay.getUserCount()) {
+                if (this.netplay.ready >= this.netplay.getUserCount()) {
                     this.netplay.sendMessage({ readyready: true });
                     this.netplay.reset();
                     setTimeout(() => this.play(true), 48);
@@ -5699,7 +5705,7 @@ class EmulatorJS {
             this.netplay.socket.emit("data-message", data);
         }
         this.netplay.reset = () => {
-            this.netplay.init_frame = this.netplay.currentFrame;
+            this.netplay.init_frame = parseInt(this.gameManager.getFrameNum());
             this.netplay.inputsData = {};
         }
         //let fps;
@@ -5707,7 +5713,7 @@ class EmulatorJS {
         this.netplay.init_frame = 0;
         this.netplay.currentFrame = 0;
         this.netplay.inputsData = {};
-        this.Module.postMainLoop = () => {
+        this.netplayPostMainLoop = () => {
             //const newTime = window.performance.now();
             //fps = 1000 / (newTime - lastTime);
             //console.log(fps);

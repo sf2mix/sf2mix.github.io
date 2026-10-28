@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body, html { margin: 0; padding: 0; background: #000; }
+</style>
+</head>
+<body>
+    <div style="width:640px;height:480px;max-width:100%">
+        <div id="game"></div>
+    </div>
+    <script>
+        EJS_player = "#game";
+        EJS_core = "fbneo";
+        EJS_gameName = "sf2cre";
+        EJS_color = "#000000";
+        EJS_startOnLoaded = true;
+        EJS_gameID = 850003;
+        EJS_Buttons = { netplay: { visible: true } };
+        EJS_pathtodata = "data/";
+        EJS_gameUrl = "https://sf2mix.github.io/downloads/sf2cre.zip";
+        if (!location.search.includes("min=1")) {
+            EJS_DEBUG_XX = true;
+        }
+    </script>
+    <script src="data/netplay-config.js"></script>
+    <script src="data/loader.js"></script>
+</body>
+</html>
