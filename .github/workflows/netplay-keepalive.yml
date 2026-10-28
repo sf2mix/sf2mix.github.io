@@ -1,0 +1,19 @@
+name: Netplay keep-alive
+
+# O servico gratis do Render dorme apos 15 min sem trafego e as salas de netplay
+# vivem so em memoria. Este agendamento bate no /healthz a cada 5 min para o
+# processo continuar acordado. GitHub cron nao aceita intervalo menor que 5 min.
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Acorda o servidor de netplay
+        run: |
+          curl --fail --silent --show-error --max-time 45 \
+            https://sf2mix-github-io.onrender.com/healthz
