@@ -16,12 +16,12 @@
         <script>
             EJS_player = "#game";
             EJS_core = "arcade";
-            EJS_gameName = "sf2cejc";
+            EJS_gameName = "sf2cre";
             EJS_color = "#000000";
             EJS_startOnLoaded = true;
 			EJS_fullscreenOnLoad = true;
-            EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
-            EJS_gameUrl = "https://sf2mix.github.io/downloads/beta/sf2cejc.zip";
+            EJS_pathtodata = "https://sf2mix.github.io/data/";
+            EJS_gameUrl = "https://sf2mix.github.io/downloads/sf2cre.zip";
 			EJS_VirtualGamepadSettings = [
 				{"type":"button","text":"4","id":"a","location":"right","right":145,"top":80,"bold":true,"input_value":0},
                 {"type":"button","text":"5","id":"b","location":"right","right":75,"top":80,"bold":true,"input_value":8},
@@ -33,8 +33,11 @@
                 {"type":"button","text":"Coin","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
 		]
+			EJS_gameID = 850003;
+			EJS_Buttons = { netplay: { visible: true } };
 
         </script>
+        <script src="https://sf2mix.github.io/data/netplay-config.js"></script>
         <script src="https://sf2mix.github.io/data/loader.js"></script>
     </body>
 </html>

@@ -78,6 +78,22 @@
         await loadScript("emulator.min.js");
         await loadStyle("emulator.min.css");
     }
+    // sf2mix: let a running session point at a throwaway netplay server
+    // (e.g. https://xxx.trycloudflare.com) without rebuilding the site.
+    // Only https is accepted; the page itself is served over https, so an
+    // http endpoint would be blocked as mixed content anyway.
+    try {
+        const netplayParams = new URLSearchParams(window.location.search);
+        const netplayServer = netplayParams.get("netplayServer");
+        const isHttps = /^https:\/\/[^/]+\/?$/i.test(netplayServer);
+        const isLocalHttp = window.location.protocol === "http:" && /^http:\/\/localhost(:\d+)?\/?$/i.test(netplayServer);
+        if (typeof netplayServer === "string" && (isHttps || isLocalHttp)) {
+            window.EJS_netplayServer = netplayServer;
+        }
+        if (netplayParams.get("netplay") === "1") {
+            window.EJS_EXPERIMENTAL_NETPLAY = true;
+        }
+    } catch (e) {} //Ignore
     const config = {};
     config.gameUrl = window.EJS_gameUrl;
     config.dataPath = scriptPath;

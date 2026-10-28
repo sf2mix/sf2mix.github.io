@@ -1,0 +1,19 @@
+# Blueprint do Render. O codigo do servidor esta na pasta netplay/ deste repositorio,
+# por isso rootDir aponta para la e os comandos sao relativos a ela.
+# Fluxo alternativo (sem blueprint): New -> Web Service e preencher
+# Root Directory = netplay no Settings -> Build & Deploy.
+services:
+  - type: web
+    name: sf2mix-netplay
+    runtime: node
+    plan: free
+    region: virginia
+    branch: main
+    rootDir: netplay
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: MAX_ROOMS
+        value: "200"

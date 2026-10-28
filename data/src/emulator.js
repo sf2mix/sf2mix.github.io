@@ -205,7 +205,7 @@ class EmulatorJS {
         this.initControlVars();
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ["localhost", "127.0.0.1"].includes(location.hostname))) this.checkForUpdates();
-        this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
+        this.netplayEnabled = (window.EJS_EXPERIMENTAL_NETPLAY === true);
         this.config = config;
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;

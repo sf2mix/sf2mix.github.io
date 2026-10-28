@@ -1,0 +1,7 @@
+# dependencias do servidor de netplay (o Render instala com npm ci)
+node_modules/
+*.log
+
+# harness de teste local do netplay — nao publicar
+netplay-local-test.html
+netplay-2p-test.html
