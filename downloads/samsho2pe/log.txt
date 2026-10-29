@@ -1,12 +1,28 @@
 
 ---------------------------------------------------------------------------------------
 
-Samurai Shodown 2 Perfect V.3.0 BETA FINAL
+Samurai Shodown 2 Perfect V.3.1 FINAL
 
-essential program ROM 063-p1pe.p1 has a  CRC of B3B0C7DF
-essential program ROM 063-p2pe.sp2 has a CRC of 0EFB4875
-essential program ROM 063-p3pe.p3 has a  CRC of 5E912569
+[Mini Portrait Mizuki]
 
+Kuroko and Mizuki remain hidden on the selection screen, with Kuroko to the left of Genan and Mizuki to the right of Nicotine.
+In the final version, a "mini portrait" sprite was introduced for Mizuki. Credit to GSC for the image.
+I created a new ID and a new image processing region. I did not use GSC's original ID, only the sprite itself. 
+In the event of a win streak, the portrait will correctly display Mizuki's image!
+
+[Buff]
+
+Additionally, Kyoshiro's Fire Fan special move can no longer be sliced by sword strikes.
+Nor can the animal summons of Poppy, Maju, and Paku Paku. Only another special move can clash with and cancel them out.
+
+[MIzuki Readjusted Project]
+
+All-Consuming Voracity - adjusted movement: Maju walks forward before transforming into a demon and attacking.
+Wail of our Creator - adjusted movement: Maju walks forward before transforming into a demon and attacking.
+
+---------------------------------------------------------------------------------------
+
+Samurai Shodown 2 Perfect V.3.0
 
 Update patch notes
 
