@@ -42,11 +42,19 @@ Atenção: cada redeploy derruba as salas de netplay ativas.
 3. **Installation**: Contexts = User + Guild; Install Type = **Guild + Direct Message** (ou apenas User — não é necessário criar bot).
 4. **OAuth2 → General**: adicione um Redirect placeholder `https://127.0.0.1` (o campo é obrigatório no portal, mas o fluxo da Activity não usa redirect).
 5. **Activities**:
-   - **Activity Status**: Save (habilita a plataforma; isso cria o entry point "Launch" nos canais).
-   - **URL Mappings → New**: Prefix `/` → `https://<serviço>.onrender.com/`
-     (o mesmo host escolhido no Render; sem paths adicionais — um único mapping cobre o site todo).
+   - **Enable Activities**: marque a primeira caixa da página e salve. Isso cria sozinho o entry point **"Launch"** nos canais.
+   - **URL Mappings → New**: Prefixo `/` → domínio `sf2mix-github-io.onrender.com`
+     **sem protocolo e sem barra final** (a doc exige: o target não inclui `https://` e precisa apontar para um diretório). Um único mapping na raiz cobre o site todo.
+   - **Application URL Override**: deixe **desligado** — é apenas para túnel/localhost em desenvolvimento.
    - Salvar e aguardar propagar (podem ser precisos alguns minutos e reabrir o Discord).
-6. **Rich Presence → Art Assets**: opcional, suba um `icon.png` para o card da Activity.
+6. **Informações gerais**: nome/descrição/tags não afetam o funcionamento. O campo Tags pode travar o salvamento com `tags: 0`; para Activity privada basta ignorar essa aba.
+7. **Rich Presence → Art Assets**: opcional, suba um `icon.png` para o card da Activity.
+
+## 2.1 Uso sem verificação (Activity privada)
+
+Lançar uma Activity **não distribuída** é limitado ao dono do app e a membros da equipe de desenvolvimento. Para liberar os visitantes do seu servidor sem verificação/listagem: adicione-os em **Testers de apps**, ou instale o app no servidor pelo link da aba **Installation** (contexto Guild, sem escopo de bot) e cole o link no canal. Teste com uma pessoa antes de escolher.
+
+No cliente, ative **Modo Desenvolvedor** (Configurações do usuário → Avançado) para enxergar a prateleira de Activities no canal de voz (botão do foguete).
 
 ## 3. Uso
 

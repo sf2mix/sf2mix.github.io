@@ -40,6 +40,7 @@
         await waitFor(() => emu.started);
         //El menu de netplay inicializa this.netplay de forma perezosa.
         emu.openNetplayMenu();
+        const button = addNetplayButton(emu);
         emu.netplayMenu.style.display = "none";
         if (!emu.netplay || !emu.netplay.openRoom) return;
 
@@ -55,12 +56,37 @@
             const found = Object.entries(open).find(([, room]) => room.room_name === roomName);
             if (found) {
                 emu.netplay.joinRoom(found[0], roomName);
-                return;
+                break;
             }
             if (attempt === 3) {
                 emu.netplay.openRoom(roomName, maxPlayers, "");
+                break;
             }
         }
+        //openRoom/joinRoom son asincronos: el ack puede tardar mas que la red.
+        if (!await waitFor(() => emu.isNetplay, 30000)) {
+            //No abrir el popup solo: un ack lento no debe tapar la partida.
+            //El boton pasa a ser el convite para entrar manualmente.
+            button.textContent = "Netplay: entrar";
+            button.style.borderColor = "rgba(var(--ejs-primary-color),1)";
+        }
+    }
+
+    //Boton flotante: la barra de menus del emulador esta oculta hasta el hover,
+    //y dentro de Discord eso no es evidente. top:44px para no pisarla.
+    function addNetplayButton(emu) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Netplay";
+        button.style.cssText = [
+            "position:fixed", "top:44px", "right:8px", "z-index:2147483000",
+            "padding:6px 12px", "font:12px/1.2 monospace", "cursor:pointer",
+            "color:#fff", "background:rgba(0,0,0,.55)", "border:1px solid #666",
+            "border-radius:4px",
+        ].join(";");
+        button.addEventListener("click", () => emu.openNetplayMenu());
+        document.body.appendChild(button);
+        return button;
     }
 
     boot().catch((e) => console.warn("[discord-activity]", e));

@@ -18,6 +18,11 @@ app.use(cors({
 // domnios externos sem mapping falham com blocked:csp. Servir o site inteiro
 // aqui (mesma origem do relay) deixa o Activity autonomo: ROM, core, data/
 // e socket.io passam todos pelo mesmo host.
+// O proxy de Activities abre a raiz do dominio mapeado, mas a raiz deste host e
+// a home do site (index.html). O ponto de entrada da Activity e a pagina do jogo;
+// o site canonico continua no GitHub Pages.
+app.get('/', (req, res) => res.redirect('/sf2mix.html'));
+
 app.use(express.static(path.join(__dirname, '..'), {
   extensions: ['html'],
   setHeaders: (res, filePath) => {
