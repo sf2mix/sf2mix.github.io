@@ -5267,10 +5267,24 @@ class EmulatorJS {
             };
             return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
         }
-        //Delay de input em frames. O valor original (10 = 166ms) é menor que o RTT
-        //real do relay, então todo input do outro lado chegava "velho" e disparava
-        //as pausas de 48ms em cadeia. 20 frames = 333ms de folga para a rede.
-        const INPUT_DELAY = 20;
+        // Delay de input em frames. Cada lado só executa o frame F depois de receber do
+        // outro o anúncio de que ele já enviou tudo que carimba F; o anúncio sai com
+        // INPUT_DELAY-1 frames de antecedência, então D precisa cobrir apenas a latência
+        // de ida (RTT/2) + jitter. D frames é o lag que os DOIS jogadores sentem, e os dois
+        // executam cada input no MESMO índice de frame - sem isso as duas telas divergem.
+        // Em links lentos aumente com window.EJS_netplayInputDelay (ex.: 16).
+        const INPUT_DELAY = Math.max(4, parseInt(window.EJS_netplayInputDelay, 10) || 10);
+        // Tempo sem receber o anúncio antes de exigir um resync completo (savestate).
+        const STALL_TIMEOUT = 600;
+        // Hash do estado a cada CHECK_EVERY frames (0 = desligado, que é o padrão).
+        // Medido em netplay-det-test.js: rodar 300 frames duas vezes do MESMO estado numa
+        // única instância dá tela idêntica (pxDiff 0), mas 1424 bytes do savestate mudam
+        // sozinhos - contadores internos que o core não restaura no load_state. Um hash de
+        // bytes portanto discorda até da própria máquina, e com o detector ligado eleger um
+        // resync a cada poucos segundos (visto no harness: 4 resyncs em 25 s). Deixar ligado
+        // só vale para experimentar: window.EJS_netplayStateCheck = 30.
+        const CHECK_EVERY = Math.max(0, parseInt(window.EJS_netplayStateCheck, 10) || 0);
+        const DRIFT_COOLDOWN = 3000;
         this.netplay.url = this.config.netplayUrl;
         while (this.netplay.url.endsWith("/")) {
             this.netplay.url = this.netplay.url.substring(0, this.netplay.url.length - 1);
@@ -5571,20 +5585,84 @@ class EmulatorJS {
             if (this.debug) console.log("loading:", loading);
         }
         let syncing = false;
+        this.netplay.settle = (tries) => new Promise((done) => {
+            //Depois de pause() o frame que já estava agendado ainda roda: se capturar ou
+            //carregar o estado nesse instante, um dos lados fica 1 frame à frente para sempre.
+            const check = (left) => {
+                const before = parseInt(this.gameManager.getFrameNum());
+                setTimeout(() => {
+                    const after = parseInt(this.gameManager.getFrameNum());
+                    if (before !== after && left > 0) return check(left - 1);
+                    done();
+                }, 40);
+            };
+            check(tries || 4);
+        })
+        this.netplay.stepCoreTo = (target) => new Promise((resolve) => {
+            //Roda frames até o contador ABSOLUTO do core chegar em `target` e para de novo.
+            //O load_state não restaura esse contador (nem o bloco de timers que deriva dele),
+            //então alinhar os dois contadores antes do load é o que faz as duas máquinas
+            //partirem do mesmo estado de verdade. Medido: sem alinhar a tela diverge no frame
+            //451; alinhando, 1891 frames depois a diferença ainda é zero.
+            const gm = this.gameManager;
+            const orig = this.netplayPostMainLoop;
+            let finished = false;
+            const done = () => {
+                if (finished) return;
+                finished = true;
+                this.netplayPostMainLoop = orig;
+                this.pause(true);
+                resolve(parseInt(gm.getFrameNum()));
+            };
+            this.netplayPostMainLoop = function () {
+                try { orig.call(this); } catch (e) {}
+                if (parseInt(gm.getFrameNum()) >= target) done();
+            };
+            this.play(true);
+            setTimeout(done, 8000);
+        })
+        this.netplay.capture = async () => {
+            //Estado canônico: capturar, recarurar o próprio arquivo e só então enviar. As duas
+            //máquinas passam a executar a partir do MESMO bytes de savestate.
+            const state = this.gameManager.getState();
+            this.gameManager.loadState(state);
+            await this.netplay.settle();
+            this.netplay.syncId = guidGenerator();
+            this.netplay.sentCounter = parseInt(this.gameManager.getFrameNum());
+            this.netplay.sendMessage({
+                state: state,
+                syncId: this.netplay.syncId,
+                hostCounter: this.netplay.sentCounter
+            });
+        }
+        this.netplay.resyncAt = async (target) => {
+            if ((this.netplay.alignTries = (this.netplay.alignTries || 0) + 1) > 2) return false;
+            this.netplay.resyncing = true;
+            this.netplay.stopStall();
+            this.pause(true);
+            await this.netplay.stepCoreTo(target);
+            await this.netplay.capture();
+            return true;
+        }
         this.netplay.sync = async () => {
             if (syncing) return;
             syncing = true;
             if (this.debug) console.log("sync")
             this.netplay.ready = 0;
-            const state = this.gameManager.getState();
-            this.netplay.sendMessage({
-                state: state
-            });
-            this.netplay.setLoading(true);
+            this.netplay.alignTries = 0;
+            this.netplay.resyncing = true;
+            this.netplay.stopStall();
             this.pause(true);
+            await this.netplay.settle();
+            //Cada sync abre uma sessão nova; marcador/input com sid antigo é descartado,
+            //porque veio do relógio pré-resync e abriria o portão antes da hora.
+            await this.netplay.capture();
+            this.netplay.setLoading(true);
             this.netplay.ready++;
             this.netplay.current_frame = 0;
             if (this.netplay.ready >= this.netplay.getUserCount()) {
+                //Host sozinho na sala: ninguém vai mandar "ready", então o próprio sync libera o laço.
+                this.netplay.resyncing = false;
                 this.play(true);
             }
             syncing = false;
@@ -5602,184 +5680,314 @@ class EmulatorJS {
             for (const k in this.netplay.players) i++;
             return i;
         }
-        let justReset = false;
         this.netplay.dataMessage = (data) => {
             //console.log(data);
             if (data.sync === true && this.netplay.owner) {
                 this.netplay.sync();
             }
             if (data.state) {
-                this.netplay.wait = true;
                 this.netplay.setLoading(true);
-                this.netplay.syncing = false;
+                this.netplay.resyncing = true;
+                this.netplay.stopStall();
                 this.pause(true);
-                this.gameManager.loadState(new Uint8Array(data.state));
-                this.netplay.sendMessage({ ready: true });
+                const bytes = new Uint8Array(data.state);
+                const hostCounter = parseInt(data.hostCounter);
+                this.netplay.settle().then(async () => {
+                    //Só dá para alinhar para frente: se estivermos atrás do contador usado na
+                    //captura, rodamos os frames que faltam (este estado será descartado já já).
+                    if (isFinite(hostCounter) && parseInt(this.gameManager.getFrameNum()) < hostCounter) {
+                        await this.netplay.stepCoreTo(hostCounter);
+                    }
+                    this.netplay.syncId = data.syncId;
+                    this.gameManager.loadState(bytes);
+                    //O que sobrou diferente logo depois do load é campo que o core não
+                    //restaura: vira a máscara de blocos ignorados pelo hash de drift.
+                    this.netplay.volatileBlocks = this.netplay.computeVolatile(bytes, this.gameManager.getState());
+                    this.netplay.reset();
+                    this.netplay.sendMessage({
+                        ready: true,
+                        counter: parseInt(this.gameManager.getFrameNum()),
+                        voly: Object.keys(this.netplay.volatileBlocks)
+                    });
+                    //Se o readyready nunca chegar (host caiu no meio do handshake), o guest
+                    //não pode ficar congelado para sempre: solta o próprio relógio depois de 5 s.
+                    clearTimeout(this.netplay.resyncWatch);
+                    this.netplay.resyncWatch = setTimeout(() => {
+                        if (this.netplay.resyncing) {
+                            this.netplay.resyncing = false;
+                            this.netplay.reset();
+                            this.play(true);
+                        }
+                    }, 5000);
+                });
             }
-            if (data.play && !this.owner) {
+            if (data.play && !this.netplay.owner) {
                 this.play(true);
             }
-            if (data.pause && !this.owner) {
+            if (data.pause && !this.netplay.owner) {
                 this.pause(true);
             }
             if (data.ready && this.netplay.owner) {
+                if (data.voly) {
+                    const blocks = {};
+                    data.voly.forEach((b) => { blocks[parseInt(b)] = true; });
+                    this.netplay.volatileBlocks = blocks;
+                }
+                if (typeof data.counter === "number" && typeof this.netplay.sentCounter === "number" &&
+                    data.counter > this.netplay.sentCounter && (this.netplay.alignTries || 0) < 2) {
+                    //O guest estava à frente do nosso contador quando carregou - e não existe
+                    //rebobinar. Nós é que corremos até lá e reenviamos: ele está pausado, então
+                    //o segundo load cai exatamente no mesmo contador. Custa um round-trip no
+                    //join e devolve as duas máquinas com o estado de timers idêntico.
+                    this.netplay.resyncAt(data.counter);
+                    return;
+                }
                 this.netplay.ready++;
                 if (this.netplay.ready >= this.netplay.getUserCount()) {
                     this.netplay.sendMessage({ readyready: true });
                     this.netplay.reset();
+                    this.netplay.resyncing = false;
+                    clearTimeout(this.netplay.resyncWatch);
                     setTimeout(() => this.play(true), 48);
                     this.netplay.setLoading(false);
                 }
             }
             if (data.readyready) {
                 this.netplay.setLoading(false);
-                this.netplay.syncing = false;
                 this.netplay.reset();
+                this.netplay.resyncing = false;
+                clearTimeout(this.netplay.resyncWatch);
                 this.play(true);
-            }
-            if (data.shortPause && data.shortPause !== this.netplay.playerID) {
-                this.pause(true);
-                this.netplay.wait = true;
-                setTimeout(() => this.play(true), 48);
             }
             if (data["sync-control"]) {
                 data["sync-control"].forEach((value) => {
-                    let inFrame = parseInt(value.frame);
-                    let frame = this.netplay.currentFrame;
-                    if (!this.netplay.owner) {
-                        //O Host manda a cada frame, inclusive marcadores sem input (value.frame = frameHost + INPUT_DELAY).
-                        //Sem registrar o marcador, o Guest achava que o frame estava perdido e exigía sync completo.
+                    if (value.sid !== this.netplay.syncId) return;
+                    const inFrame = parseInt(value.frame);
+                    //Carimbo não à frente do nosso relógio = resto de antes de um resync.
+                    //Executar esse input agora adiantaria um frame só numa das máquinas.
+                    if (!(inFrame > this.netplay.currentFrame)) return;
+                    if (value.connected_input && value.connected_input[0] >= 0) {
                         this.netplay.inputsData[inFrame] || (this.netplay.inputsData[inFrame] = []);
-                        //TCP entrega en orden: recibir el marcador K implica que todos los <= K llegaron.
-                        this.netplay.lastMarker = Math.max(this.netplay.lastMarker || 0, inFrame);
-                        //shortPause só quando o Host adiantou mais de 20 frames além da janela;
-                        //a fórmula antiga (frame + 10 <= inFrame) era sempre verdadeira e pausava o Host todo frame.
-                        if (inFrame - frame > INPUT_DELAY + 20 && inFrame > this.netplay.init_frame + 100) {
-                            this.netplay.sendMessage({ shortPause: this.netplay.playerID });
-                        }
-                    }
-                    if (!value.connected_input || value.connected_input[0] < 0) return;
-                    if (inFrame === frame) {
-                        inFrame++;
-                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
-                    }
-                    if (this.netplay.owner) {
-                        this.netplay.inputsData[frame] || (this.netplay.inputsData[frame] = []);
-                        this.netplay.inputsData[frame].push(value);
-                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
-                        if (frame - INPUT_DELAY >= inFrame) {
-                            this.netplay.wait = true;
-                            this.pause(true);
-                            setTimeout(() => {
-                                this.play(true);
-                                this.netplay.wait = false;
-                            }, 48)
-                        }
-                    } else {
                         this.netplay.inputsData[inFrame].push(value);
-                        if (this.netplay.inputsData[frame]) {
-                            this.play(true);
+                    }
+                    this.netplay.peerFrames[value.from] = Math.max(this.netplay.peerFrames[value.from] || 0, inFrame);
+                    if (value.h) {
+                        const mine = this.netplay.hashByFrame[value.h.f];
+                        if (mine === undefined) {
+                            //ainda não calculamos esse frame
+                        } else if (mine === value.h.v) {
+                            this.netplay.driftStreak = 0;
+                        } else {
+                            this.netplay.driftStreak = (this.netplay.driftStreak || 0) + 1;
+                            if (this.netplay.driftStreak >= 2) {
+                                this.netplay.driftStreak = 0;
+                                this.netplay.onDrift(value.h.f);
+                            }
                         }
                     }
                 });
+                if (this.netplay.waiting && this.netplay.canAdvance()) {
+                    this.netplay.stopStall();
+                    this.play(true);
+                }
             }
             if (data.restart) {
                 this.gameManager.restart();
                 this.netplay.reset();
+                this.netplay.resyncing = false;
                 this.play(true);
             }
         }
-        this.netplay.simulateInput = (player, index, value, resp) => {
+        this.netplay.simulateInput = (player, index, value) => {
             if (!this.isNetplay) return;
-            if (player !== 0 && !resp) return;
-            player = this.netplay.getUserIndex(this.netplay.playerID);
-            let frame = this.netplay.currentFrame;
-            if (this.netplay.owner) {
-                if (!this.netplay.inputsData[frame]) {
-                    this.netplay.inputsData[frame] = [];
-                }
-                this.netplay.inputsData[frame].push({
-                    frame: frame,
-                    connected_input: [player, index, value]
-                })
-                this.gameManager.functions.simulateInput(player, index, value);
-            } else {
-                this.netplay.sendMessage({
-                    "sync-control": [{
-                        frame: frame + INPUT_DELAY,
-                        connected_input: [player, index, value]
-                    }]
-                })
-            }
+            if (player !== 0) return;
+            //O teclado/gamepad local é sempre o "1º jogador" do EJS; aqui vira o slot real do usuário.
+            const slot = this.netplay.getUserIndex(this.netplay.playerID);
+            if (slot < 0) return;
+            //Nada entra direto no core: o input é carimbado para o frame corrente + delay e
+            //aplicado pelo laço, do mesmo jeito nos dois lados.
+            const stamp = this.netplay.currentFrame + INPUT_DELAY;
+            this.netplay.inputsData[stamp] || (this.netplay.inputsData[stamp] = []);
+            this.netplay.inputsData[stamp].push({
+                frame: stamp,
+                connected_input: [slot, index, value]
+            });
+            this.netplay.sendMessage({
+                "sync-control": [{
+                    frame: stamp,
+                    sid: this.netplay.syncId,
+                    from: this.netplay.playerID,
+                    connected_input: [slot, index, value]
+                }]
+            })
         }
         this.netplay.sendMessage = (data) => {
             this.netplay.socket.emit("data-message", data);
         }
         this.netplay.reset = () => {
             this.netplay.init_frame = parseInt(this.gameManager.getFrameNum());
+            this.netplay.currentFrame = 0;
+            this.netplay.reanchor = true;
             this.netplay.inputsData = {};
-            this.netplay.lastMarker = 0;
+            this.netplay.peerFrames = {};
+            this.netplay.hashByFrame = {};
             this.netplay.syncing = false;
+            this.netplay.stopStall();
+        }
+        //TCP entrega em ordem: ter o anúncio do frame F de um peer implica que todos os
+        //inputs que ele carimbou com F (ou antes) já estão em inputsData.
+        this.netplay.canAdvance = () => {
+            for (const id in this.netplay.players) {
+                if (id === this.netplay.playerID) continue;
+                if ((this.netplay.peerFrames[id] || 0) < this.netplay.currentFrame) return false;
+            }
+            return true;
+        }
+        this.netplay.applyInputs = (frame) => {
+            const queued = this.netplay.inputsData[frame];
+            if (!queued) return;
+            delete this.netplay.inputsData[frame];
+            queued.forEach((value) => {
+                if (value.connected_input) this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
+            });
+        }
+        //FNV-1a sobre uma amostra do estado. Pula a cabeça (contadores que o core mantém
+        //locais) e os blocos de 4 KiB marcados como voláteis: logo depois de um resync as
+        //duas máquinas ainda diferem em campos que load_state não restaura (som/Z80), e
+        //incluir esses blocos no hash dispararia resync em cada check.
+        this.netplay.computeVolatile = (sent, got) => {
+            const blocks = {};
+            const n = Math.min(sent.length, got.length);
+            for (let i = 0; i < n; i++) {
+                if (sent[i] !== got[i]) blocks[i >> 12] = true;
+            }
+            return blocks;
+        }
+        this.netplay.stateHash = () => {
+            const voly = this.netplay.volatileBlocks;
+            if (!voly) return null;
+            const s = this.gameManager.getState();
+            let h = 2166136261 >>> 0;
+            const end = s.length - 8192;
+            for (let i = 64; i < end; i += 7) {
+                if (voly[i >> 12]) continue;
+                h ^= s[i];
+                h = Math.imul(h, 16777619) >>> 0;
+            }
+            return h;
+        }
+        this.netplay.hashFrame = (frame) => {
+            const v = this.netplay.stateHash();
+            if (v === null) return null;
+            this.netplay.hashByFrame[frame] = v;
+            Object.keys(this.netplay.hashByFrame).forEach((k) => {
+                if (parseInt(k) < frame - CHECK_EVERY * 4) delete this.netplay.hashByFrame[k];
+            });
+            return v;
+        }
+        //Um dos lados chegou a um frame cujo hash é outro: a partida divergiu. Dois checks
+        //seguidos, para não trocar um race de medida por um resync de verdade. Só o host tem
+        //o estado canônico, então o guest pede sync e o host empurra o estado novo.
+        this.netplay.onDrift = (frame) => {
+            const now = Date.now();
+            if (now - (this.netplay.lastDriftAt || 0) < DRIFT_COOLDOWN) return;
+            this.netplay.lastDriftAt = now;
+            if (this.debug) console.log("drift no frame", frame, "-> resync");
+            this.netplay.hashByFrame = {};
+            if (this.netplay.owner) {
+                this.netplay.sync();
+            } else if (!this.netplay.syncing) {
+                this.netplay.syncing = true;
+                this.netplay.sendMessage({ sync: true });
+            }
+        }
+        this.netplay.stall = () => {
+            if (this.netplay.waiting) return;
+            this.netplay.waiting = true;
+            this.netplay.stalledAt = Date.now();
+            this.pause(true);
+            this.netplay.stallTimer = setInterval(() => {
+                if (this.netplay.resyncing) return;
+                if (this.netplay.canAdvance()) {
+                    this.netplay.stopStall();
+                    this.play(true);
+                } else if (Date.now() - this.netplay.stalledAt > STALL_TIMEOUT) {
+                    this.netplay.stopStall();
+                    if (!this.netplay.syncing) {
+                        this.netplay.syncing = true;
+                        this.netplay.sendMessage({ sync: true });
+                    }
+                }
+            }, 20);
+        }
+        this.netplay.stopStall = () => {
+            clearInterval(this.netplay.stallTimer);
+            this.netplay.stallTimer = null;
             this.netplay.waiting = false;
         }
         //let fps;
         //let lastTime;
         this.netplay.init_frame = 0;
         this.netplay.currentFrame = 0;
+        this.netplay.reanchor = false;
         this.netplay.inputsData = {};
+        this.netplay.peerFrames = {};
         this.netplay.syncing = false;
         this.netplay.waiting = false;
+        this.netplay.resyncing = false;
+        this.netplay.syncId = undefined;
+        this.netplay.hashByFrame = {};
+        this.netplay.lastDriftAt = 0;
+        this.netplay.volatileBlocks = null;
+        this.netplay.driftStreak = 0;
+        this.netplay.sentCounter = undefined;
+        this.netplay.alignTries = 0;
         this.netplayPostMainLoop = () => {
             //const newTime = window.performance.now();
             //fps = 1000 / (newTime - lastTime);
             //console.log(fps);
             //lastTime = newTime;
-            //frame syncing - working
-            //control syncing - broken
-            this.netplay.currentFrame = parseInt(this.gameManager.getFrameNum()) - this.netplay.init_frame;
+            const coreFrame = parseInt(this.gameManager.getFrameNum());
+            if (this.netplay.reanchor) {
+                //Ancorar no 1º frame executado depois do sync, e não no instante do handshake:
+                //no reset um dos lados ainda podia ter um frame em voo, e os dois relógios
+                //ficavam defasados em 1 frame para sempre (input entrava em frames diferentes).
+                this.netplay.init_frame = coreFrame;
+                this.netplay.reanchor = false;
+            }
+            this.netplay.currentFrame = coreFrame - this.netplay.init_frame;
             if (!this.isNetplay) return;
-            if (this.netplay.owner) {
-                let to_send = [];
-                let i = this.netplay.currentFrame - 1;
-                this.netplay.inputsData[i] ? this.netplay.inputsData[i].forEach((value) => {
-                    value.frame += INPUT_DELAY;
-                    to_send.push(value);
-                }) : to_send.push({ frame: i + INPUT_DELAY });
-                this.netplay.sendMessage({ "sync-control": to_send });
-            } else {
-                if (this.netplay.currentFrame <= 0 || (this.netplay.lastMarker || 0) >= this.netplay.currentFrame || this.netplay.inputsData[this.netplay.currentFrame]) {
-                    this.netplay.wait = false;
-                    this.play();
-                    (this.netplay.inputsData[this.netplay.currentFrame] || []).forEach((value) => {
-                        if (!value.connected_input) return;
-                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
-                    })
-                } else if (!this.netplay.syncing && !this.netplay.waiting) {
-                    //O marcador do frame pode estar em trânsito no relay: aguardar antes
-                    //de exigir um sync completo (que tranfiere o save-state e congela a partida).
-                    this.pause(true);
-                    this.netplay.waiting = true;
-                    const deadline = Date.now() + 500;
-                    const recheck = () => {
-                        if ((this.netplay.lastMarker || 0) >= this.netplay.currentFrame || this.netplay.inputsData[this.netplay.currentFrame]) {
-                            this.netplay.waiting = false;
-                            this.play(true);
-                        } else if (Date.now() < deadline) {
-                            setTimeout(recheck, 60);
-                        } else {
-                            this.netplay.waiting = false;
-                            this.netplay.syncing = true;
-                            this.pause(true);
-                            this.netplay.sendMessage({ sync: true });
-                        }
-                    };
-                    setTimeout(recheck, 60);
+            if (this.netplay.resyncing) {
+                //Handshake de resync em andamento. Sem este travão o laço chama play(true)
+                //logo abaixo e o host volta a correr no meio do sync: o estado que o guest
+                //carrega já tinha 5-10 frames de atraso e as duas telas ficam outras partidas.
+                return;
+            }
+            if (!this.netplay.canAdvance()) {
+                this.netplay.stall();
+                return;
+            }
+            this.netplay.applyInputs(this.netplay.currentFrame);
+            this.play(true);
+            //Anúncio de cobertura: tudo que este lado carimba com (currentFrame + INPUT_DELAY - 1)
+            //já foi enviado nesta mensagem ou em alguma anterior.
+            const marker = {
+                frame: this.netplay.currentFrame + INPUT_DELAY - 1,
+                sid: this.netplay.syncId,
+                from: this.netplay.playerID
+            };
+            if (CHECK_EVERY && this.netplay.currentFrame % CHECK_EVERY === 0) {
+                const v = this.netplay.hashFrame(this.netplay.currentFrame);
+                if (v !== null) {
+                    marker.h = { f: this.netplay.currentFrame, v: v };
                 }
             }
+            this.netplay.sendMessage({
+                "sync-control": [marker]
+            });
             if (this.netplay.currentFrame % 100 === 0) {
                 Object.keys(this.netplay.inputsData).forEach(value => {
                     if (value < this.netplay.currentFrame - 50) {
-                        this.netplay.inputsData[value] = null;
                         delete this.netplay.inputsData[value];
                     }
                 })

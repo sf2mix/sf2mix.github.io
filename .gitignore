@@ -9,3 +9,4 @@ netplay-2p-test.html
 # saida temporaria do gerador de imagens e testes locais
 vibe_images/
 netplay-headless-test.js
+netplay-det-test.js
