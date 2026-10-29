@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const socketIo = require('socket.io');
 const cors = require('cors');
 
@@ -11,6 +12,19 @@ app.use(cors({
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
+}));
+
+// O proxy de Activities do Discord so permite conteudo da origem mapeada;
+// domnios externos sem mapping falham com blocked:csp. Servir o site inteiro
+// aqui (mesma origem do relay) deixa o Activity autonomo: ROM, core, data/
+// e socket.io passam todos pelo mesmo host.
+app.use(express.static(path.join(__dirname, '..'), {
+  extensions: ['html'],
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.mjs')) {
+      res.setHeader('Content-Type', 'text/javascript; charset=UTF-8');
+    }
+  },
 }));
 
 const io = socketIo(server, {
