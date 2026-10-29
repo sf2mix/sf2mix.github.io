@@ -5267,6 +5267,10 @@ class EmulatorJS {
             };
             return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
         }
+        //Delay de input em frames. O valor original (10 = 166ms) é menor que o RTT
+        //real do relay, então todo input do outro lado chegava "velho" e disparava
+        //as pausas de 48ms em cadeia. 20 frames = 333ms de folga para a rede.
+        const INPUT_DELAY = 20;
         this.netplay.url = this.config.netplayUrl;
         while (this.netplay.url.endsWith("/")) {
             this.netplay.url = this.netplay.url.substring(0, this.netplay.url.length - 1);
@@ -5607,6 +5611,7 @@ class EmulatorJS {
             if (data.state) {
                 this.netplay.wait = true;
                 this.netplay.setLoading(true);
+                this.netplay.syncing = false;
                 this.pause(true);
                 this.gameManager.loadState(new Uint8Array(data.state));
                 this.netplay.sendMessage({ ready: true });
@@ -5628,10 +5633,10 @@ class EmulatorJS {
             }
             if (data.readyready) {
                 this.netplay.setLoading(false);
+                this.netplay.syncing = false;
                 this.netplay.reset();
                 this.play(true);
             }
-            if (data.shortPause) console.log(data.shortPause);
             if (data.shortPause && data.shortPause !== this.netplay.playerID) {
                 this.pause(true);
                 this.netplay.wait = true;
@@ -5641,19 +5646,28 @@ class EmulatorJS {
                 data["sync-control"].forEach((value) => {
                     let inFrame = parseInt(value.frame);
                     let frame = this.netplay.currentFrame;
+                    if (!this.netplay.owner) {
+                        //O Host manda a cada frame, inclusive marcadores sem input (value.frame = frameHost + INPUT_DELAY).
+                        //Sem registrar o marcador, o Guest achava que o frame estava perdido e exigía sync completo.
+                        this.netplay.inputsData[inFrame] || (this.netplay.inputsData[inFrame] = []);
+                        //TCP entrega en orden: recibir el marcador K implica que todos los <= K llegaron.
+                        this.netplay.lastMarker = Math.max(this.netplay.lastMarker || 0, inFrame);
+                        //shortPause só quando o Host adiantou mais de 20 frames além da janela;
+                        //a fórmula antiga (frame + 10 <= inFrame) era sempre verdadeira e pausava o Host todo frame.
+                        if (inFrame - frame > INPUT_DELAY + 20 && inFrame > this.netplay.init_frame + 100) {
+                            this.netplay.sendMessage({ shortPause: this.netplay.playerID });
+                        }
+                    }
                     if (!value.connected_input || value.connected_input[0] < 0) return;
-                    //if (value.connected_input[0] === this.netplay.getUserIndex(this.netplay.playerID)) return;
-                    console.log(value, inFrame, frame);
                     if (inFrame === frame) {
                         inFrame++;
                         this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
                     }
-                    this.netplay.inputsData[inFrame] || (this.netplay.inputsData[inFrame] = []);
-                    this.netplay.inputsData[frame] || (this.netplay.inputsData[frame] = []);
                     if (this.netplay.owner) {
+                        this.netplay.inputsData[frame] || (this.netplay.inputsData[frame] = []);
                         this.netplay.inputsData[frame].push(value);
                         this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
-                        if (frame - 10 >= inFrame) {
+                        if (frame - INPUT_DELAY >= inFrame) {
                             this.netplay.wait = true;
                             this.pause(true);
                             setTimeout(() => {
@@ -5665,9 +5679,6 @@ class EmulatorJS {
                         this.netplay.inputsData[inFrame].push(value);
                         if (this.netplay.inputsData[frame]) {
                             this.play(true);
-                        }
-                        if (frame + 10 <= inFrame && inFrame > this.netplay.init_frame + 100) {
-                            this.netplay.sendMessage({ shortPause: this.netplay.playerID });
                         }
                     }
                 });
@@ -5695,7 +5706,7 @@ class EmulatorJS {
             } else {
                 this.netplay.sendMessage({
                     "sync-control": [{
-                        frame: frame + 10,
+                        frame: frame + INPUT_DELAY,
                         connected_input: [player, index, value]
                     }]
                 })
@@ -5707,12 +5718,17 @@ class EmulatorJS {
         this.netplay.reset = () => {
             this.netplay.init_frame = parseInt(this.gameManager.getFrameNum());
             this.netplay.inputsData = {};
+            this.netplay.lastMarker = 0;
+            this.netplay.syncing = false;
+            this.netplay.waiting = false;
         }
         //let fps;
         //let lastTime;
         this.netplay.init_frame = 0;
         this.netplay.currentFrame = 0;
         this.netplay.inputsData = {};
+        this.netplay.syncing = false;
+        this.netplay.waiting = false;
         this.netplayPostMainLoop = () => {
             //const newTime = window.performance.now();
             //fps = 1000 / (newTime - lastTime);
@@ -5726,24 +5742,38 @@ class EmulatorJS {
                 let to_send = [];
                 let i = this.netplay.currentFrame - 1;
                 this.netplay.inputsData[i] ? this.netplay.inputsData[i].forEach((value) => {
-                    value.frame += 10;
+                    value.frame += INPUT_DELAY;
                     to_send.push(value);
-                }) : to_send.push({ frame: i + 10 });
+                }) : to_send.push({ frame: i + INPUT_DELAY });
                 this.netplay.sendMessage({ "sync-control": to_send });
             } else {
-                if (this.netplay.currentFrame <= 0 || this.netplay.inputsData[this.netplay.currentFrame]) {
+                if (this.netplay.currentFrame <= 0 || (this.netplay.lastMarker || 0) >= this.netplay.currentFrame || this.netplay.inputsData[this.netplay.currentFrame]) {
                     this.netplay.wait = false;
                     this.play();
-                    this.netplay.inputsData[this.netplay.currentFrame].forEach((value) => {
+                    (this.netplay.inputsData[this.netplay.currentFrame] || []).forEach((value) => {
                         if (!value.connected_input) return;
-                        console.log(value.connected_input);
                         this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
                     })
-                } else if (!this.netplay.syncing) {
-                    console.log("sync");
+                } else if (!this.netplay.syncing && !this.netplay.waiting) {
+                    //O marcador do frame pode estar em trânsito no relay: aguardar antes
+                    //de exigir um sync completo (que tranfiere o save-state e congela a partida).
                     this.pause(true);
-                    this.netplay.sendMessage({ sync: true });
-                    this.netplay.syncing = true;
+                    this.netplay.waiting = true;
+                    const deadline = Date.now() + 500;
+                    const recheck = () => {
+                        if ((this.netplay.lastMarker || 0) >= this.netplay.currentFrame || this.netplay.inputsData[this.netplay.currentFrame]) {
+                            this.netplay.waiting = false;
+                            this.play(true);
+                        } else if (Date.now() < deadline) {
+                            setTimeout(recheck, 60);
+                        } else {
+                            this.netplay.waiting = false;
+                            this.netplay.syncing = true;
+                            this.pause(true);
+                            this.netplay.sendMessage({ sync: true });
+                        }
+                    };
+                    setTimeout(recheck, 60);
                 }
             }
             if (this.netplay.currentFrame % 100 === 0) {
