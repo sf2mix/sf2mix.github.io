@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body, html { margin: 0; padding: 0; background: #000; }
+</style>
+</head>
+<body>
+    <div style="width:640px;height:480px;max-width:100%">
+        <div id="game"></div>
+    </div>
+    <script>
+        EJS_player = "#game";
+        EJS_core = "fbneo";
+        EJS_gameName = "sf2cre";
+        EJS_color = "#000000";
+        EJS_startOnLoaded = true;
+        EJS_gameID = 850003;
+        EJS_Buttons = { netplay: { visible: true } };
+        EJS_pathtodata = "data/";
+        EJS_gameUrl = "https://sf2mix.github.io/downloads/sf2cre.zip";
+        // Arquivo unico gerado a partir de data/src/* (mesma ordem do loader em debug), em
+        // vez do emulator.min.js feito a mao. Assim o que o harness mede e o mesmo codigo
+        // que a pagina carrega.
+        EJS_paths = { "emulator.min.js": "data/emulator.sf2.js" };
+        // ?inDelay=N no URL desta pagina forca o D base do lockstep (o adaptativo so sobe
+        // acima disso). Usado na medicao de tradeoff lag x engasgo no relay remoto.
+        var qd = new URLSearchParams(location.search);
+        if (qd.get("inDelay")) window.EJS_netplayInputDelay = qd.get("inDelay");
+        if (qd.get("fixedD") === "1") window.EJS_netplayInputDelayFixed = "1";
+    </script>
+    <script src="data/netplay-config.js"></script>
+    <script type="module" src="data/discord-activity.js"></script>
+    <script src="data/loader.js"></script>
+</body>
+</html>

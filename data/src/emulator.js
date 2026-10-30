@@ -5272,8 +5272,63 @@ class EmulatorJS {
         // INPUT_DELAY-1 frames de antecedência, então D precisa cobrir apenas a latência
         // de ida (RTT/2) + jitter. D frames é o lag que os DOIS jogadores sentem, e os dois
         // executam cada input no MESMO índice de frame - sem isso as duas telas divergem.
-        // Em links lentos aumente com window.EJS_netplayInputDelay (ex.: 16).
+        // Em links lentos D é calculado sozinho (adaptInputDelay abaixo); use
+        // window.EJS_netplayInputDelay apenas para exigir um piso maior que 10.
         const INPUT_DELAY = Math.max(4, parseInt(window.EJS_netplayInputDelay, 10) || 10);
+        // Medido no harness: quando a ida (RTT/2) passa de D-1 frames o portão fecha antes
+        // do anúncio chegar e o lockstep entra num poço sem volta - os dois lados ficam com
+        // o relógio apartados, cada frame vira um ida-e-volta de stall/timeout e a taxa cai.
+        // No relay do Render, com D travado em 10: 33 fps, 69% do tempo parado e telas
+        // realmente diferentes (pxDiff 22725 de 86016). Com D adaptativo no mesmo relay:
+        // 60 fps, 0 resync e pxDiff 0. Então D é recalculado pela sonda de RTT do próprio
+        // client (o socket.io vendorizado não mede latência nenhuma) e só SOBE (ratchet):
+        // diminuir no meio da partida reabriria o poço. O custo é lag de input, e é o preço
+        // real da distância até o servidor.
+        this.netplay.inputDelay = INPUT_DELAY;
+        // O socket.io vendorizado não expõe latência (medido: socket.latency e socket.ping
+        // dão 0 nos dois lados), então o RTT é medido aqui: ping/pong no mesmo canal do
+        // input, com `at` ecoado de volta. performance.now() em vez de Date.now() porque no
+        // relay local o ida-e-volta é submilissegundo e Date.now() daria 0 para sempre.
+        // Sonda a cada 300 ms: o poço do lockstep se instala nos primeiros frames, então o
+        // D precisa saber a latência antes de virar jogo - a 1 Hz ele chegava tarde demais.
+        this.netplay.rtt = 0;
+        this.netplay.rttMin = 0;
+        this.netplay.rttMax = 0;
+        this.netplay.pingSeq = 0;
+        this.netplay.pingsOut = {};
+        this.netplay.pingsRcv = 0;
+        this.netplay.pingTimer = setInterval(() => {
+            if (!this.isNetplay || !this.netplay.socket || !this.netplay.socket.connected) return;
+            const seq = ++this.netplay.pingSeq;
+            this.netplay.pingsOut[seq] = performance.now();
+            this.netplay.sendMessage({ ping: seq, at: this.netplay.pingsOut[seq] });
+            for (const k in this.netplay.pingsOut) {
+                if (performance.now() - this.netplay.pingsOut[k] > 5000) delete this.netplay.pingsOut[k];
+            }
+        }, 300);
+        this.netplay.adaptInputDelay = () => {
+            // knob de medição: com EJS_netplayInputDelayFixed=1 o D fica travado no valor de
+            // window.EJS_netplayInputDelay e a sonda continua medindo o RTT. Serve para o A/B
+            // "D fixo x D adaptativo" no mesmo relay.
+            if (window.EJS_netplayInputDelayFixed === "1" || window.EJS_netplayInputDelayFixed === 1)
+                return this.netplay.inputDelay;
+            const rtt = this.netplay.rtt;
+            if (!(rtt > 0)) return this.netplay.inputDelay;
+            // O anúncio precisa chegar antes de o colega bater no portão: o mínimo é o
+            // caminho-de-ida em frames, mais uma folga para o jitter. Cada frame a mais
+            // nesse número é LAG DE INPUT que os DOIS sentem, então a folga é contada de
+            // acordo com o link, não inflada.
+            // Medido no relay do Render (RTT 458-520 ms, picos de 1684 ms), mesmo código:
+              //  folga 4  -> D 22 -> guest parado 14% do tempo
+            //  folga 10 -> D 26 -> guest parado  7%
+            //  D fixo 30          -> guest parado  5%  (e 500 ms de lag)
+            // Em link local (RTT < 120 ms) o jitter é de 1-2 frames, então a folga pequena
+            // mantém o lag de quem joga na mesma rede/na mesma cidade o menor possível.
+            const folga = rtt > 120 ? 10 : 4;
+            const need = Math.min(30, Math.max(INPUT_DELAY, Math.ceil(rtt / 2 / 16.667) + folga));
+            if (need > this.netplay.inputDelay) this.netplay.inputDelay = need;
+            return this.netplay.inputDelay;
+        }
         // Tempo sem receber o anúncio antes de exigir um resync completo (savestate).
         const STALL_TIMEOUT = 600;
         // Hash do estado a cada CHECK_EVERY frames (0 = desligado, que é o padrão).
@@ -5621,6 +5676,23 @@ class EmulatorJS {
             this.play(true);
             setTimeout(done, 8000);
         })
+        this.netplay.embeddedCounter = (state) =>
+            //u32 em offset 16 do RASTATE = quantos frames AQUELE estado executou. É o contador
+            //que load_state não restaura, então é ele que tem de coincidir entre as duas
+            //máquinas. getFrameNum() não serve de referência direta: medido no harness, o host
+            //captura com offset 16 = 416 e já lê getFrameNum() = 417 um tick depois, enquanto o
+            //guest alinhado por getFrameNum fica com offset 16 = 417. Um frame de diferença na
+            //origem e os timers derivam para sempre.
+            new DataView(state.buffer, state.byteOffset, state.byteLength).getUint32(16, true)
+        this.netplay.alignEmbedded = async (target) => {
+            //Traz o contador EMBUTIDO do nosso estado para `target` (só anda para frente).
+            //Converte para unidades de getFrameNum() usando o delta local, medido agora.
+            const mine = this.netplay.embeddedCounter(this.gameManager.getState());
+            const gfn = parseInt(this.gameManager.getFrameNum());
+            const want = target + (gfn - mine);
+            if (want > gfn) await this.netplay.stepCoreTo(want);
+            return this.netplay.embeddedCounter(this.gameManager.getState());
+        }
         this.netplay.capture = async () => {
             //Estado canônico: capturar, recarurar o próprio arquivo e só então enviar. As duas
             //máquinas passam a executar a partir do MESMO bytes de savestate.
@@ -5628,7 +5700,7 @@ class EmulatorJS {
             this.gameManager.loadState(state);
             await this.netplay.settle();
             this.netplay.syncId = guidGenerator();
-            this.netplay.sentCounter = parseInt(this.gameManager.getFrameNum());
+            this.netplay.sentCounter = this.netplay.embeddedCounter(state);
             this.netplay.sendMessage({
                 state: state,
                 syncId: this.netplay.syncId,
@@ -5640,7 +5712,7 @@ class EmulatorJS {
             this.netplay.resyncing = true;
             this.netplay.stopStall();
             this.pause(true);
-            await this.netplay.stepCoreTo(target);
+            await this.netplay.alignEmbedded(target);
             await this.netplay.capture();
             return true;
         }
@@ -5682,6 +5754,20 @@ class EmulatorJS {
         }
         this.netplay.dataMessage = (data) => {
             //console.log(data);
+            if (data.ping !== undefined && data.at) {
+                this.netplay.sendMessage({ pong: data.ping, at: data.at });
+            }
+            if (data.pong !== undefined && this.netplay.pingsOut[data.pong]) {
+                const rtt = performance.now() - this.netplay.pingsOut[data.pong];
+                delete this.netplay.pingsOut[data.pong];
+                this.netplay.pingsRcv++;
+                this.netplay.rttMin = Math.min(this.netplay.rttMin || rtt, rtt);
+                this.netplay.rttMax = Math.max(this.netplay.rttMax || rtt, rtt);
+                // Média móbil, NÃO o mínimo: um pico isolado de 700 ms não deve virar
+                // delay permanente, mas um aumento real da latência tem que ser seguido
+                // em ~2 s. Com min() o pico de jitter ficava preso e o D subia sozinho.
+                this.netplay.rtt = this.netplay.rtt > 0 ? this.netplay.rtt * 0.8 + rtt * 0.2 : rtt;
+            }
             if (data.sync === true && this.netplay.owner) {
                 this.netplay.sync();
             }
@@ -5693,20 +5779,27 @@ class EmulatorJS {
                 const bytes = new Uint8Array(data.state);
                 const hostCounter = parseInt(data.hostCounter);
                 this.netplay.settle().then(async () => {
-                    //Só dá para alinhar para frente: se estivermos atrás do contador usado na
-                    //captura, rodamos os frames que faltam (este estado será descartado já já).
-                    if (isFinite(hostCounter) && parseInt(this.gameManager.getFrameNum()) < hostCounter) {
-                        await this.netplay.stepCoreTo(hostCounter);
-                    }
+                    //Só dá para alinhar para frente: trazemos o NOSSO contador embutido para o
+                    //valor que o host gravou dentro do estado (u32 em offset 16 do RASTATE)
+                    //antes de carregar. É exatamente esse contador que o load_state não
+                    //restaura, e não o getFrameNum() local - alinhar pelo getFrameNum deixava
+                    //o estado do guest com offset 16 = hostCounter + 1 (medido: 416/417,
+                    //396/397), e os timers derivados dele divergem para sempre.
+                    if (isFinite(hostCounter)) await this.netplay.alignEmbedded(hostCounter);
                     this.netplay.syncId = data.syncId;
                     this.gameManager.loadState(bytes);
+                    const mine = this.gameManager.getState();
                     //O que sobrou diferente logo depois do load é campo que o core não
                     //restaura: vira a máscara de blocos ignorados pelo hash de drift.
-                    this.netplay.volatileBlocks = this.netplay.computeVolatile(bytes, this.gameManager.getState());
+                    this.netplay.volatileBlocks = this.netplay.computeVolatile(bytes, mine);
                     this.netplay.reset();
+                    //Devolvemos o contador embutido REAL que ficou no nosso estado depois do
+                    //load, na mesma unidade do hostCounter. Se o passo de alinhamento tiver
+                    //comido um frame a mais, o host lê este número, corre até lá e reenvia
+                    //(branch "ready") em vez de deixar as duas máquinas com timers defasados.
                     this.netplay.sendMessage({
                         ready: true,
-                        counter: parseInt(this.gameManager.getFrameNum()),
+                        counter: this.netplay.embeddedCounter(mine),
                         voly: Object.keys(this.netplay.volatileBlocks)
                     });
                     //Se o readyready nunca chegar (host caiu no meio do handshake), o guest
@@ -5771,6 +5864,11 @@ class EmulatorJS {
                         this.netplay.inputsData[inFrame].push(value);
                     }
                     this.netplay.peerFrames[value.from] = Math.max(this.netplay.peerFrames[value.from] || 0, inFrame);
+                    if (value.d && value.d > this.netplay.inputDelay) {
+                        //o colega precisa de mais folga que nós; subir o nosso D custa lag, mas
+                        //mantê-lo baixo deixa o portão fechando em cada frame (20-35 fps).
+                        this.netplay.inputDelay = Math.min(30, value.d);
+                    }
                     if (value.h) {
                         const mine = this.netplay.hashByFrame[value.h.f];
                         if (mine === undefined) {
@@ -5806,7 +5904,7 @@ class EmulatorJS {
             if (slot < 0) return;
             //Nada entra direto no core: o input é carimbado para o frame corrente + delay e
             //aplicado pelo laço, do mesmo jeito nos dois lados.
-            const stamp = this.netplay.currentFrame + INPUT_DELAY;
+            const stamp = this.netplay.currentFrame + this.netplay.adaptInputDelay();
             this.netplay.inputsData[stamp] || (this.netplay.inputsData[stamp] = []);
             this.netplay.inputsData[stamp].push({
                 frame: stamp,
@@ -5918,7 +6016,11 @@ class EmulatorJS {
                         this.netplay.sendMessage({ sync: true });
                     }
                 }
-            }, 20);
+            }, 4);
+            //Os dois lados param juntas quando cada um consome a janela inteira de anúncio do
+            //outro (gap trava em INPUT_DELAY-1). Nesse ponto ninguém mais envia mensagem, então
+            //só este poll reacende o loop. Com 20 ms o ciclo de ida e volta custava ~40 ms por
+            //frame e o jogo rodava a 36 fps MESMO COM O RELAY EM 1 ms; a 4 ms o teto sobe.
         }
         this.netplay.stopStall = () => {
             clearInterval(this.netplay.stallTimer);
@@ -5972,9 +6074,12 @@ class EmulatorJS {
             //Anúncio de cobertura: tudo que este lado carimba com (currentFrame + INPUT_DELAY - 1)
             //já foi enviado nesta mensagem ou em alguma anterior.
             const marker = {
-                frame: this.netplay.currentFrame + INPUT_DELAY - 1,
+                frame: this.netplay.currentFrame + this.netplay.adaptInputDelay() - 1,
                 sid: this.netplay.syncId,
-                from: this.netplay.playerID
+                from: this.netplay.playerID,
+                // cada lado anuncia o D que está usando; quem recebe adota o maior, porque a
+                // janela de anúncio precisa cobrir a viagem NOS DOIS sentidos
+                d: this.netplay.inputDelay
             };
             if (CHECK_EVERY && this.netplay.currentFrame % CHECK_EVERY === 0) {
                 const v = this.netplay.hashFrame(this.netplay.currentFrame);
