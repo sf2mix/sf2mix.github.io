@@ -1,6 +1,21 @@
 
 ---------------------------------------------------------------------------------------
 
+Samurai Shodown 2 Perfect V.3.2 FINAL
+
+essential program ROM 063-p1pe.p1 has a  CRC of 8928E40A
+essential program ROM 063-p2pe.sp2 has a CRC of 4813C6CE				
+essential program ROM 063-p3pe.p3 has a  CRC of 5E912569
+essential program ROM 063-c7pe.c7 has a  CRC of 423F2FE0
+essential program ROM 063-c8pe.c8 has a  CRC of 9D54DAE0
+
+
+[Bug fix]
+
+Hell Circle Move, the demonic dog "Maju" by a bug was going down out of the stage, bug has been fixed!
+
+---------------------------------------------------------------------------------------
+
 Samurai Shodown 2 Perfect V.3.1 FINAL
 
 [Mini Portrait Mizuki]
